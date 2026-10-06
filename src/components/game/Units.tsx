@@ -125,7 +125,7 @@ export function MonsterModel({ w, e }: { w: World; e: Entity }) {
         <mesh position={[-1.3, 1.2, 0]}><boxGeometry args={[0.6, 1.6, 0.6]} /><meshStandardMaterial color="#5a5e4c" flatShading /></mesh>
       </> : <>
         <mesh position-y={0.55} rotation-x={Math.PI / 2} castShadow><capsuleGeometry args={[0.32, 0.8, 3, 6]} /><meshStandardMaterial color="#5b4e44" flatShading /></mesh>
-        <mesh position={[0, 0.7, 0.6]}><coneGeometry args={[0.25, 0.5, 5]} rotation-x={Math.PI / 2} /><meshStandardMaterial color="#4a3f37" flatShading /></mesh>
+        <mesh position={[0, 0.7, 0.6]} rotation-x={Math.PI / 2}><coneGeometry args={[0.25, 0.5, 5]} /><meshStandardMaterial color="#4a3f37" flatShading /></mesh>
       </>}
     </group>
   );
