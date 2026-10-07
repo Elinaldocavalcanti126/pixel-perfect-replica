@@ -48,7 +48,7 @@ export function HeroModel({ w, e }: { w: World; e: Entity }) {
     <group ref={ref} position={[e.pos.x, 0, e.pos.z]}>
       <mesh rotation-x={-Math.PI / 2} position-y={0.04}>
         <ringGeometry args={[0.75, 0.9, 24]} />
-        <meshBasicMaterial color={TEAM_COL[e.team]} transparent opacity={0.85} />
+        <meshBasicMaterial color={TEAM_COL[e.team] ?? 0xffffff} transparent opacity={0.85} />
       </mesh>
       <group ref={body}>
         <mesh position-y={0.85} castShadow><cylinderGeometry args={[0.35, 0.5, 1.1, 7]} /><meshStandardMaterial color={c} flatShading /></mesh>
