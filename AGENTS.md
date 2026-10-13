@@ -13,3 +13,5 @@
 - Game state lives outside React in `src/game` (lightweight ECS World + systems, fixed 30 Hz tick); React only renders the 3D view and HUD — keeps simulation deterministic and ready for networked multiplayer.
 - Player actions go through command functions in `src/game/game.ts` — they are the seam for future network input sync.
 - Pathfinding is grid A* over the walkable map with line-of-sight smoothing — avoids a navmesh asset pipeline.
+- Hero presentation uses per-instance SkeletonUtils clones of CDN-hosted CC0 GLBs, with useAnimations driven by existing movement, attack timestamps, and cooldown changes — keeps visual animation independent of simulation rules.
+- Imported hero materials use stepped toon lighting and skeleton-bound outlines; retain source textures and dispose only instance-owned materials — preserves character identity without corrupting shared GLTF caches.
