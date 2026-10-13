@@ -102,7 +102,7 @@ function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
       const duration = motion === "cast" ? 0.65 : motion === "attack" ? Math.min(0.6, 0.75 / e.stats.atkSpeed) : undefined;
       s.previous = playHeroClip(actions, s.previous, name, motion, duration);
       s.motion = motion;
-      group.userData.heroMotion = motion;
+      group.userData["heroMotion"] = motion;
     }
     s.attack = e.lastAttackTime;
     s.cds = [...hero.cds];
@@ -115,7 +115,7 @@ function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
 }
 
 export function AnimatedHero({ w, e }: { w: World; e: Entity }) {
-  const asset = HERO_ASSETS[e.hero?.defId ?? "warrior"] ?? HERO_ASSETS.warrior;
+  const asset = HERO_ASSETS[e.hero?.defId ?? "warrior"] ?? HERO_ASSETS["warrior"];
   if (!asset) return null;
   return <Suspense fallback={<Html position={[e.pos.x, 2, e.pos.z]} center><span className="text-xs text-primary">Carregando herói…</span></Html>}>
     <Rig w={w} e={e} asset={asset} />
