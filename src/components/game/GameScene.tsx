@@ -91,7 +91,7 @@ export function GameScene({ w, cam }: { w: World; cam: CamState }) {
     <Canvas shadows dpr={[1, 1.75]} camera={{ fov: 42, near: 0.5, far: 200, position: [0, 30, 20] }} className="absolute inset-0">
       <color attach="background" args={["#0e1612"]} />
       <fog attach="fog" args={["#0e1612", 45, 95]} />
-      <hemisphereLight args={["#d8e2ff", "#2a2418", 0.7]} />
+      <hemisphereLight args={["#d8e2ff", "#2a2418", 0.85]} />
       <directionalLight position={[25, 40, 15]} intensity={2.2} color="#ffe2b8" castShadow
         shadow-mapSize-width={2048} shadow-mapSize-height={2048}
         shadow-camera-left={-70} shadow-camera-right={70} shadow-camera-top={45} shadow-camera-bottom={-45} />

@@ -117,11 +117,7 @@ function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
 export function AnimatedHero({ w, e }: { w: World; e: Entity }) {
   const asset = HERO_ASSETS[e.hero?.defId ?? "warrior"] ?? HERO_ASSETS.warrior;
   if (!asset) return null;
-  return <>
-    <group position={[e.pos.x, 0.1, e.pos.z]}>
-      <Suspense fallback={<Html center><span className="text-xs text-primary">Carregando herói…</span></Html>}>
-        <Rig w={w} e={e} asset={asset} />
-      </Suspense>
-    </group>
-  </>;
+  return <Suspense fallback={<Html position={[e.pos.x, 2, e.pos.z]} center><span className="text-xs text-primary">Carregando herói…</span></Html>}>
+    <Rig w={w} e={e} asset={asset} />
+  </Suspense>;
 }
