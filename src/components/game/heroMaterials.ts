@@ -30,7 +30,7 @@ export function toonMaterial(source: THREE.Material, ramp: THREE.DataTexture) {
 /** Inverted hull, expanded AFTER skinning: the ink follows elbows, knees and weapons. */
 export function createHeroOutline(color: THREE.Color, thickness: number) {
   return new THREE.ShaderMaterial({
-    uniforms: { ink: { value: color }, thickness: { value: thickness } },
+    uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, { ink: { value: color }, thickness: { value: thickness } }]),
     side: THREE.BackSide,
     vertexShader: `
       #include <common>

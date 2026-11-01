@@ -1,4 +1,4 @@
-import { useAnimations, useGLTF, Html } from "@react-three/drei";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -117,7 +117,7 @@ function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
 export function AnimatedHero({ w, e }: { w: World; e: Entity }) {
   const asset = HERO_ASSETS[e.hero?.defId ?? "warrior"] ?? HERO_ASSETS["warrior"];
   if (!asset) return null;
-  return <Suspense fallback={<Html position={[e.pos.x, 2, e.pos.z]} center><span className="text-xs text-primary">Carregando herói…</span></Html>}>
+  return <Suspense fallback={<mesh position={[e.pos.x, 0.1, e.pos.z]} rotation-x={-Math.PI / 2}><ringGeometry args={[0.6, 0.8, 24]} /><meshBasicMaterial color={e.team === 0 ? 0x4f86d9 : 0xd9574f} /></mesh>}>
     <Rig w={w} e={e} asset={asset} />
   </Suspense>;
 }
