@@ -7,8 +7,10 @@ import type { Entity } from "@/game/types";
 export function HeroSelectionRing({ e, color }: { e: Entity; color: THREE.Color }) {
   const mesh = useRef<THREE.Mesh>(null);
   const reducedMotion = useRef(false);
+  const time = useMemo(() => ({ value: 0 }), []);
   const material = useMemo(() => new THREE.ShaderMaterial({
-    uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, { tint: { value: color }, time: { value: 0 } }]),
+    // UniformsUtils clones values; reinsert live references after the fog merge.
+    uniforms: { ...THREE.UniformsUtils.merge([THREE.UniformsLib.fog]), tint: { value: color }, time },
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
@@ -53,9 +55,7 @@ export function HeroSelectionRing({ e, color }: { e: Entity; color: THREE.Color 
         #include <fog_fragment>
       }
     `,
-  }), [color]);
-  // UniformsUtils clones colors; keep this bound to the palette resolved after mount.
-  material.uniforms["tint"].value = color;
+  }), [color, time]);
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => { reducedMotion.current = media.matches; };
@@ -65,7 +65,7 @@ export function HeroSelectionRing({ e, color }: { e: Entity; color: THREE.Color 
   }, [material]);
   useFrame((_, delta) => {
     if (mesh.current) mesh.current.visible = e.alive && e.visible;
-    if (!reducedMotion.current) material.uniforms["time"].value += Math.min(delta, 0.05);
+    if (!reducedMotion.current) time.value += Math.min(delta, 0.05);
   });
   return <mesh ref={mesh} name="player-runic-ring" rotation-x={-Math.PI / 2} position-y={0.055} renderOrder={1} material={material}>
     <planeGeometry args={[3.2, 3.2]} />
