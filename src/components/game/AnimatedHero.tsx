@@ -8,10 +8,13 @@ import type { Entity } from "@/game/types";
 import { HERO_ASSETS, type HeroAsset } from "./heroAssets";
 import { createHeroOutline, createHeroRamp, toonMaterial } from "./heroMaterials";
 import { inPlaceClips, playHeroClip, type HeroMotion } from "./heroAnimation";
+import { useHeroColors } from "./heroVisuals";
+import { HeroSelectionRing } from "./HeroSelectionRing";
 
 function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
   const root = useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF(asset.url);
+  const colors = useHeroColors(e.hero?.defId ?? "warrior", e.team);
   const rig = useMemo(() => {
     const object = clone(scene);
     const ramp = createHeroRamp();
@@ -23,7 +26,7 @@ function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
       o.visible = bodyPart || asset.accessories.includes(o.name);
       if (!o.visible) return;
       const convert = (source: THREE.Material) => {
-        const mat = toonMaterial(source, ramp);
+        const mat = toonMaterial(source, ramp, colors.rim);
         // Different costumes, not team tints: retain readable class identities.
         if (e.hero?.defId === "support") mat.color.setRGB(0.72, 1, 0.83);
         materials.push(mat);
@@ -59,7 +62,7 @@ function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
       mesh.add(hull);
     }
     return { object, scale, offset: [-center.x * scale, -box.min.y * scale, -center.z * scale] as [number, number, number], materials, ramp };
-  }, [scene, asset, e]);
+  }, [scene, asset, e, colors]);
   const clips = useMemo(() => inPlaceClips(animations), [animations]);
   const { actions } = useAnimations(clips, root);
   const state = useRef({ previous: null as string | null, motion: "idle" as HeroMotion, until: 0,
@@ -70,10 +73,11 @@ function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
     rig.ramp.dispose();
   }, [rig]);
 
-  useFrame((_, rawDelta) => {
+  useFrame(({ gl }, rawDelta) => {
     const group = root.current;
     const hero = e.hero;
     if (!group || !hero) return;
+    if (hero.isPlayer) gl.domElement.dataset["sceneReady"] = "true";
     const dt = Math.min(rawDelta, 0.05);
     group.visible = e.visible && (e.alive || w.time - e.deathTime < 2.5);
     const k = 1 - Math.exp(-18 * dt);
@@ -110,6 +114,7 @@ function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
   });
 
   return <group ref={root} name={`hero-${e.id}`} position={[e.pos.x, 0, e.pos.z]}>
+    {e.hero?.isPlayer && <HeroSelectionRing e={e} color={colors.team} />}
     <group position={rig.offset} scale={rig.scale}><primitive object={rig.object} dispose={null} /></group>
   </group>;
 }
