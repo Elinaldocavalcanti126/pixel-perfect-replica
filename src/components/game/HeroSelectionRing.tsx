@@ -2,6 +2,7 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { Entity } from "@/game/types";
+import { FOUNTAIN } from "@/game/map/map";
 
 /** One transparent ground decal, no texture request and no extra lights. */
 export function HeroSelectionRing({ e, color }: { e: Entity; color: THREE.Color }) {
@@ -64,7 +65,12 @@ export function HeroSelectionRing({ e, color }: { e: Entity; color: THREE.Color 
     return () => { media.removeEventListener("change", update); material.dispose(); };
   }, [material]);
   useFrame((_, delta) => {
-    if (mesh.current) mesh.current.visible = e.alive && e.visible;
+    if (mesh.current) {
+      mesh.current.visible = e.alive && e.visible;
+      // The fountain's colored platform rises above the regular ground.
+      const onPlatform = FOUNTAIN.some((f) => Math.hypot(e.pos.x - f.x, e.pos.z - f.z) < 7.4);
+      mesh.current.position.y = onPlatform ? 0.32 : 0.055;
+    }
     if (!reducedMotion.current) time.value += Math.min(delta, 0.05);
   });
   return <mesh ref={mesh} name="player-runic-ring" rotation-x={-Math.PI / 2} position-y={0.055} renderOrder={1} material={material}>
