@@ -10,9 +10,9 @@ export function createHeroRamp() {
   return ramp;
 }
 
-export function toonMaterial(source: THREE.Material, ramp: THREE.DataTexture) {
+export function toonMaterial(source: THREE.Material, ramp: THREE.DataTexture, rimColor?: THREE.Color) {
   const original = source as THREE.MeshStandardMaterial;
-  return new THREE.MeshToonMaterial({
+  const material = new THREE.MeshToonMaterial({
     color: original.color?.clone() ?? new THREE.Color(1, 1, 1),
     map: original.map ?? null,
     gradientMap: ramp,
@@ -25,6 +25,24 @@ export function toonMaterial(source: THREE.Material, ramp: THREE.DataTexture) {
     emissiveMap: original.emissiveMap ?? null,
     emissiveIntensity: Math.min(original.emissiveIntensity ?? 0, 0.35),
   });
+  if (rimColor) {
+    material.onBeforeCompile = (shader) => {
+      shader.uniforms["heroRimColor"] = { value: rimColor };
+      shader.vertexShader = shader.vertexShader
+        .replace("#include <common>", "#include <common>\nvarying vec3 heroViewNormal;\nvarying vec3 heroViewDirection;")
+        .replace("#include <project_vertex>", "#include <project_vertex>\nheroViewNormal = normalize(transformedNormal);\nheroViewDirection = -mvPosition.xyz;");
+      shader.fragmentShader = shader.fragmentShader
+        .replace("#include <common>", "#include <common>\nuniform vec3 heroRimColor;\nvarying vec3 heroViewNormal;\nvarying vec3 heroViewDirection;")
+        .replace("#include <opaque_fragment>", `
+          float heroEdge = 1.0 - max(dot(normalize(heroViewNormal), normalize(heroViewDirection)), 0.0);
+          float heroRim = smoothstep(0.48, 0.96, heroEdge);
+          outgoingLight += heroRimColor * heroRim * 0.65;
+          #include <opaque_fragment>
+        `);
+    };
+    material.customProgramCacheKey = () => "arcana-hero-rim-v1";
+  }
+  return material;
 }
 
 /** Inverted hull, expanded AFTER skinning: the ink follows elbows, knees and weapons. */

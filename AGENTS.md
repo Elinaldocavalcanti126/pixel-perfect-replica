@@ -15,3 +15,4 @@
 - Pathfinding is grid A* over the walkable map with line-of-sight smoothing — avoids a navmesh asset pipeline.
 - Hero presentation uses per-instance SkeletonUtils clones of CDN-hosted CC0 GLBs, with useAnimations driven by existing movement, attack timestamps, and cooldown changes — keeps visual animation independent of simulation rules.
 - Imported hero materials use stepped toon lighting and skeleton-bound outlines; retain source textures and dispose only instance-owned materials — preserves character identity without corrupting shared GLTF caches.
+- Hero rim lighting and the controlled hero's ground decal resolve colors from global CSS tokens; lighting is added after skinned normals and decals follow the visual root without changing simulation — keeps theming and skeletal movement consistent.
