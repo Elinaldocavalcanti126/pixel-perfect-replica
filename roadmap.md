@@ -5,6 +5,6 @@
 - [x] Verify actual matches and all hero rendering at desktop and mobile sizes; movement and shield casting checked, console clean and routing test passed.
 
 # Hero lighting refinement
-- [ ] Add class-colored rim lighting while preserving animated models, textures, and ink outlines.
-- [ ] Add a luminous runic selection ring that follows only the controlled hero.
-- [ ] Verify rendering, movement, and absence of shader errors in a real match.
+- [x] Add class-colored rim lighting while preserving animated models, textures, and ink outlines.
+- [x] Add a luminous runic selection ring that follows only the controlled hero.
+- [x] Verify rendering and movement in a real match at desktop and mobile sizes; no shader, page, or asset request errors. Real-device frame rate remains unverified.
