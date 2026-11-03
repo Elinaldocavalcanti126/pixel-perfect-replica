@@ -7,6 +7,8 @@ import { step, TICK, cmdRightClick, cmdConfirm } from "@/game/game";
 import { MapView } from "./MapView";
 import { HeroModel, MonsterModel, TowerModel } from "./Units";
 import { Effects, HealthBars, Minions } from "./Instanced";
+import { CombatVfx } from "./CombatVfx";
+import { CombatBloom } from "./CombatBloom";
 
 export interface CamState { x: number; z: number; zoom: number; locked: boolean }
 
@@ -103,8 +105,10 @@ export function GameScene({ w, cam }: { w: World; cam: CamState }) {
       <Entities w={w} />
       <Minions w={w} />
       <Effects w={w} />
+      <CombatVfx w={w} />
       <HealthBars w={w} />
       <Controller w={w} cam={cam} />
+      <CombatBloom />
     </Canvas>
   );
 }
