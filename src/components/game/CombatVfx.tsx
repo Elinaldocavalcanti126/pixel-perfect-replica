@@ -46,6 +46,7 @@ export function CombatVfx({ w }: { w: World }) {
       texture.minFilter = THREE.LinearFilter;
       const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false, depthWrite: false, toneMapped: false });
       const sprite = new THREE.Sprite(material);
+      sprite.layers.set(2);
       sprite.renderOrder = 25;
       sprite.visible = false;
       group.add(sprite);
@@ -120,7 +121,7 @@ export function CombatVfx({ w }: { w: World }) {
       const age = w.time - e.lastAttackTime;
       if (e.hero.defId === "warrior" && age >= 0 && age < 0.34 && sl < 32) {
         quaternion.setFromEuler(new THREE.Euler(-Math.PI / 2, 0, -e.rot + Math.PI * 0.15 + age * 5, "YXZ"));
-        place(slashMesh, sl++, e.pos.x, 1, e.pos.z, 1.55, 1.55, 1.55, tint, (1 - age / 0.34) * 5);
+        place(slashMesh, sl++, e.pos.x, 1, e.pos.z, 1.55, 1.55, 1.55, tint, (1 - age / 0.34) * 2.8);
       }
       if (sp < 768 && (e.hero.defId === "mage" || e.hero.defId === "support") && e.hero.cds.some((cd) => cd > 0)) {
         quaternion.identity();
@@ -170,7 +171,7 @@ export function CombatVfx({ w }: { w: World }) {
       <meshBasicMaterial toneMapped={false} transparent blending={THREE.AdditiveBlending} depthWrite={false} />
     </instancedMesh>
     <instancedMesh ref={slashes} args={[undefined, undefined, 32]} frustumCulled={false}>
-      <ringGeometry args={[0.76, 1, 32, 1, 0, Math.PI * 0.9]} />
+      <ringGeometry args={[0.9, 1, 32, 1, 0, Math.PI * 0.9]} />
       <meshBasicMaterial toneMapped={false} transparent blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.DoubleSide} />
     </instancedMesh>
   </>;

@@ -19,7 +19,7 @@ export function CombatBloom() {
       vertexShader: "out vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}",
       fragmentShader: "uniform sampler2D tDiffuse; in vec2 vUv; out vec4 outColor; void main(){vec4 c=texture(tDiffuse,vUv); uvec4 bits=floatBitsToUint(c); bvec4 bad=equal(bits & uvec4(0x7f800000u),uvec4(0x7f800000u)); outColor=clamp(mix(c,vec4(0.0),bad),0.0,16.0);}",
     }));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.48, 0.38, 1.25);
+    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.26, 0.28, 1.25);
     const output = new OutputPass();
     composer.addPass(render); composer.addPass(safe); composer.addPass(bloom); composer.addPass(output);
     return { composer, safe, bloom, output };
@@ -31,6 +31,18 @@ export function CombatBloom() {
   useEffect(() => () => {
     pipeline.composer.dispose(); pipeline.safe.dispose(); pipeline.bloom.dispose(); pipeline.output.dispose();
   }, [pipeline]);
-  useFrame((_, dt) => { pipeline.composer.render(Math.min(dt, 0.05)); }, 1);
+  useFrame((_, dt) => {
+    const oldMask = camera.layers.mask;
+    camera.layers.disable(2);
+    pipeline.composer.render(Math.min(dt, 0.05));
+    // Damage typography is a crisp, ungraded overlay, never a bloom source.
+    const autoClear = gl.autoClear;
+    gl.autoClear = false;
+    camera.layers.set(2);
+    gl.clearDepth();
+    gl.render(scene, camera);
+    camera.layers.mask = oldMask;
+    gl.autoClear = autoClear;
+  }, 1);
   return null;
 }
