@@ -122,7 +122,7 @@ export function CombatVfx({ w }: { w: World }) {
         quaternion.setFromEuler(new THREE.Euler(-Math.PI / 2, 0, -e.rot + Math.PI * 0.15 + age * 5, "YXZ"));
         place(slashMesh, sl++, e.pos.x, 1, e.pos.z, 1.55, 1.55, 1.55, tint, (1 - age / 0.34) * 5);
       }
-      if ((e.hero.defId === "mage" || e.hero.defId === "support") && e.hero.cds.some((cd) => cd > 0)) {
+      if (sp < 768 && (e.hero.defId === "mage" || e.hero.defId === "support") && e.hero.cds.some((cd) => cd > 0)) {
         quaternion.identity();
         const pulse = 0.1 + Math.sin(w.time * 5 + e.id) * 0.025;
         place(sparkMesh, sp++, e.pos.x + Math.cos(e.rot) * 0.45, 1.65, e.pos.z - Math.sin(e.rot) * 0.45, pulse, pulse, pulse, tint, 3);

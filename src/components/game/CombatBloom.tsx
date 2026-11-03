@@ -13,12 +13,12 @@ export function CombatBloom() {
   const pipeline = useMemo(() => {
     const composer = new EffectComposer(gl);
     const render = new RenderPass(scene, camera);
-    const safe = new ShaderPass({
+    const safe = new ShaderPass(new THREE.ShaderMaterial({
       glslVersion: THREE.GLSL3,
       uniforms: { tDiffuse: { value: null } },
       vertexShader: "out vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}",
       fragmentShader: "uniform sampler2D tDiffuse; in vec2 vUv; out vec4 outColor; void main(){vec4 c=texture(tDiffuse,vUv); uvec4 bits=floatBitsToUint(c); bvec4 bad=equal(bits & uvec4(0x7f800000u),uvec4(0x7f800000u)); outColor=clamp(mix(c,vec4(0.0),bad),0.0,16.0);}",
-    });
+    }));
     const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.48, 0.38, 1.25);
     const output = new OutputPass();
     composer.addPass(render); composer.addPass(safe); composer.addPass(bloom); composer.addPass(output);
