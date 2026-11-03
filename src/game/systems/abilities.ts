@@ -16,7 +16,7 @@ export function fireProjectile(w: World, src: Entity, o: ProjOpts) {
   Object.assign(p, {
     active: true, pos: { x: src.pos.x, z: src.pos.z }, dir: { x: 0, z: 1 }, speed: 18, targetId: null,
     team: src.team, sourceId: src.id, magic: false, width: 0.8, maxDist: 20, traveled: 0, color: 0xffffff,
-    size: 0.3, onHit: "none", effectDur: 0, pierce: false, hit: new Set<number>(), isAbility: false, isAuto: false,
+    size: 0.3, onHit: "none", effectDur: 0, pierce: false, hit: new Set<number>(), isAbility: false, isAuto: false, critical: false,
     ...o,
   });
 }
@@ -185,7 +185,7 @@ export function projectileSystem(w: World, dt: number) {
       const d = Math.hypot(dx, dz);
       const step = p.speed * dt;
       if (d <= step + tgt.radius * 0.5) {
-        w.damage(src, tgt, p.damage, p.magic);
+        w.damage(src, tgt, p.damage, p.magic, p.critical);
         p.active = false;
       } else {
         p.dir.x = dx / d; p.dir.z = dz / d;
@@ -202,7 +202,7 @@ export function projectileSystem(w: World, dt: number) {
       if (p.onHit === "stun" && e.kind !== "hero") continue; // flecha do horizonte só para em heróis
       if (w.dist(e.pos, p.pos) > e.radius + p.width) continue;
       p.hit.add(e.id);
-      w.damage(src, e, p.damage, p.magic);
+      w.damage(src, e, p.damage, p.magic, p.critical);
       if (p.onHit === "root") e.status.rootUntil = t + p.effectDur;
       if (p.onHit === "stun") e.status.stunUntil = t + p.effectDur;
       w.addFx(e.pos, 1, p.color, 0.35, 0.8);

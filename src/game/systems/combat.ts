@@ -28,18 +28,19 @@ export function combatSystem(w: World, dt: number) {
         e.attackCd = 1 / e.stats.atkSpeed;
         e.lastAttackTime = t;
         let dmg = e.stats.ad;
+        let critical = false;
         if (e.hero?.defId === "archer") {
           e.hero.attackCount++;
-          if (e.hero.attackCount % 4 === 0) dmg *= 2;
+          if (e.hero.attackCount % 4 === 0) { dmg *= 2; critical = true; }
         }
         if (isRanged(e)) {
           fireProjectile(w, e, {
             targetId: tgt.id, damage: dmg, magic: false, speed: e.kind === "tower" ? 22 : 18,
             color: e.kind === "tower" ? (e.team === 0 ? 0x7fb8ff : 0xff7a5c) : e.team === 0 ? 0xbcd6ff : e.team === 1 ? 0xffc2a8 : 0xd8d8a0,
-            size: e.kind === "tower" ? 0.45 : 0.22, isAuto: true,
+            size: e.kind === "tower" ? 0.45 : 0.22, isAuto: true, critical,
           });
         } else {
-          w.damage(e, tgt, dmg, false);
+          w.damage(e, tgt, dmg, false, critical);
         }
       }
     } else if (e.kind !== "tower" && e.kind !== "altar") {
