@@ -102,6 +102,18 @@ export interface Projectile {
   hit: Set<number>;
   isAbility: boolean;
   isAuto: boolean;
+  critical?: boolean;
+}
+
+/** Informational combat feedback; never used to calculate damage. */
+export interface DamageEvent {
+  id: number;
+  targetId: number;
+  pos: Vec;
+  amount: number;
+  magic: boolean;
+  critical: boolean;
+  start: number;
 }
 
 export interface Zone {

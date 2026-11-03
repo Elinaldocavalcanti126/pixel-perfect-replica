@@ -10,6 +10,8 @@
 <!-- LOVABLE:END -->
 
 ## Architecture
+- Combat feedback uses bounded informational World damage events and fixed-size Three.js VFX pools; post-processing blooms only HDR effect cores, with non-finite scrubbing before bloom and tone mapping afterward — preserves combat balance and toon readability.
+- Dev-only `window.__game` exposes the live `world`, `sim(seconds)`, `move(x,z)` and `ability(index,x,z)`; canvas `data-scene-ready`, `data-damage-numbers`, `data-vfx-particles` and `data-vfx-trails` expose render readiness and pool counts — supports repeatable actual-match verification without duplicate simulation modules.
 - Game state lives outside React in `src/game` (lightweight ECS World + systems, fixed 30 Hz tick); React only renders the 3D view and HUD — keeps simulation deterministic and ready for networked multiplayer.
 - Player actions go through command functions in `src/game/game.ts` — they are the seam for future network input sync.
 - Pathfinding is grid A* over the walkable map with line-of-sight smoothing — avoids a navmesh asset pipeline.

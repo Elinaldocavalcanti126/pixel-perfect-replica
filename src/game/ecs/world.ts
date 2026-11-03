@@ -1,4 +1,4 @@
-import type { Entity, Fx, KillEvent, Projectile, Stats, Team, Vec, Zone } from "../types";
+import type { DamageEvent, Entity, Fx, KillEvent, Projectile, Stats, Team, Vec, Zone } from "../types";
 import { heroById, XP_TABLE } from "../data/heroes";
 import { itemById } from "../data/items";
 import { FOUNTAIN } from "../map/map";
@@ -21,6 +21,8 @@ export class World {
   zones: Zone[] = [];
   fx: Fx[] = [];
   killFeed: KillEvent[] = [];
+  damageEvents: DamageEvent[] = [];
+  nextDamageId = 1;
   time = 0;
   tick = 0;
   nextId = 1;
@@ -132,7 +134,7 @@ export class World {
     e.hp = Math.min(e.stats.maxHp, e.hp + amount);
   }
 
-  damage(src: Entity | undefined, tgt: Entity, raw: number, magic: boolean) {
+  damage(src: Entity | undefined, tgt: Entity, raw: number, magic: boolean, critical = false) {
     if (!tgt.alive || !this.isTargetable(tgt) || this.winner !== null) return;
     if (src?.status.buffUntil && src.status.buffUntil > this.time) raw *= 1.2;
     const res = magic ? tgt.stats.mr : tgt.stats.armor;
@@ -141,6 +143,15 @@ export class World {
       const a = Math.min(tgt.status.shield, dmg);
       tgt.status.shield -= a;
       dmg -= a;
+    }
+    if (dmg > 0 && tgt.visible) {
+      this.damageEvents = this.damageEvents.filter((event) => this.time - event.start < 1.2);
+      const recent = [...this.damageEvents].reverse().find((event) => event.targetId === tgt.id && event.magic === magic && !event.critical && !critical && this.time - event.start < 0.2);
+      if (recent) recent.amount += dmg;
+      else {
+        if (this.damageEvents.length >= 64) this.damageEvents.shift();
+        this.damageEvents.push({ id: this.nextDamageId++, targetId: tgt.id, pos: { ...tgt.pos }, amount: dmg, magic, critical, start: this.time });
+      }
     }
     tgt.hp -= dmg;
     if (src) {
