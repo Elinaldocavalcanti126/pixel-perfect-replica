@@ -1,4 +1,5 @@
 # Hero visual upgrade
+- [ ] Add combat damage numbers, attack trails, luminous impact particles and selective bloom; verify in a bot match.
 - [x] Source and validate CC0 animated GLBs for all four heroes (support uses a customized mage rig).
 - [x] Replace hero primitives with cloned skeletal models, toon shading, and animated outlines.
 - [x] Connect locomotion, attacks, spells, and death to existing simulation state without changing gameplay.
