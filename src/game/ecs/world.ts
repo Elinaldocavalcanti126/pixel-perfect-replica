@@ -146,7 +146,7 @@ export class World {
     }
     if (dmg > 0 && tgt.visible) {
       this.damageEvents = this.damageEvents.filter((event) => this.time - event.start < 1.2);
-      const recent = this.damageEvents.findLast((event) => event.targetId === tgt.id && event.magic === magic && !event.critical && !critical && this.time - event.start < 0.2);
+      const recent = [...this.damageEvents].reverse().find((event) => event.targetId === tgt.id && event.magic === magic && !event.critical && !critical && this.time - event.start < 0.2);
       if (recent) recent.amount += dmg;
       else {
         if (this.damageEvents.length >= 64) this.damageEvents.shift();
