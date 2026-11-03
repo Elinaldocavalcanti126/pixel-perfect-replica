@@ -37,11 +37,14 @@ export function CombatBloom() {
     pipeline.composer.render(Math.min(dt, 0.05));
     // Damage typography is a crisp, ungraded overlay, never a bloom source.
     const autoClear = gl.autoClear;
+    const background = scene.background;
+    scene.background = null;
     gl.autoClear = false;
     camera.layers.set(2);
     gl.clearDepth();
     gl.render(scene, camera);
     camera.layers.mask = oldMask;
+    scene.background = background;
     gl.autoClear = autoClear;
   }, 1);
   return null;
