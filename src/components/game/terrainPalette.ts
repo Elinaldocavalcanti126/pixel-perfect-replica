@@ -12,6 +12,7 @@ export function useTerrainPalette() {
       ctx.fillStyle = css.getPropertyValue(`--terrain-${key}`).trim(); ctx.fillRect(0, 0, 1, 1);
       const p = ctx.getImageData(0, 0, 1, 1).data;
       color.setRGB((p[0] ?? 255) / 255, (p[1] ?? 255) / 255, (p[2] ?? 255) / 255, THREE.SRGBColorSpace);
+      if (key === "flame" || key === "ember") color.multiplyScalar(2.5);
     });
   }, [colors]);
   return colors;
