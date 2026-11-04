@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { COLS, ROWS, MIN_X, MIN_Z, MAP_W, MAP_H, walkable, terrain, cellCenter, FOUNTAIN } from "@/game/map/map";
 import stoneUrl from "@/assets/terrain/mossy-stones.jpg";
 import grassUrl from "@/assets/terrain/painted-grass.jpg";
-import { inRiver } from "./terrainDetails";
+import { inRiver, TORCH_SPOTS } from "./terrainDetails";
 import { RiverAndTorches } from "./RiverAndTorches";
 import { useTerrainPalette } from "./terrainPalette";
 
@@ -71,7 +71,7 @@ export function MapView() {
             if (yy >= 0 && xx >= 0 && yy < ROWS && xx < COLS && walkable[yy * COLS + xx]) { near = true; break; }
           }
         const p = cellCenter(x, y);
-        if (inRiver(p.x, p.z)) continue;
+        if (inRiver(p.x, p.z) || TORCH_SPOTS.some(([x, z]) => Math.hypot(p.x - x, p.z - z) < 2)) continue;
         if (near ? r() < 0.85 : r() < 0.18) {
           if (r() < 0.75) trees.push({ x: p.x + r() - 0.5, z: p.z + r() - 0.5, s: 0.8 + r() * 0.8 });
           else rk.push({ x: p.x, z: p.z, s: 0.8 + r() * 1.2, ry: r() * 6 });
