@@ -1,6 +1,6 @@
 # Hero visual upgrade
-- [ ] Add combat damage numbers, attack trails, luminous impact particles and selective bloom; verify in a bot match.
-- [ ] Add original hand-painted mossy stone and grass textures, corridor torches and translucent rippling river water; preserve gameplay and verify rendering.
+- [x] Add combat damage numbers, attack trails, luminous impact particles and selective bloom; verified in real warrior/archer bot matches, critical damage test passed.
+- [x] Add original hand-painted mossy stone and grass textures, corridor torches and translucent rippling river water; unchanged gameplay paths, rendering and animation checked at desktop and compact sizes. River reflection is a lightweight Fresnel/light approximation, not a live scene reflection; device performance remains unverified.
 - [x] Source and validate CC0 animated GLBs for all four heroes (support uses a customized mage rig).
 - [x] Replace hero primitives with cloned skeletal models, toon shading, and animated outlines.
 - [x] Connect locomotion, attacks, spells, and death to existing simulation state without changing gameplay.

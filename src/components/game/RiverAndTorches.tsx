@@ -4,9 +4,15 @@ import * as THREE from "three";
 import { COLS, ROWS, cellCenter, walkable } from "@/game/map/map";
 import { inRiver, riverCenter, riverWidth, TORCH_SPOTS } from "./terrainDetails";
 import { useTerrainPalette } from "./terrainPalette";
+import stoneUrl from "@/assets/terrain/mossy-stones.jpg";
 
 export function RiverAndTorches() {
   const colors = useTerrainPalette();
+  const stoneTexture = useMemo(() => {
+    const texture = new THREE.TextureLoader().load(stoneUrl);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return texture;
+  }, []);
   const water = useMemo(() => {
     const geometry = new THREE.BufferGeometry();
     const positions: number[] = [], uv: number[] = [], indices: number[] = [];
@@ -61,7 +67,7 @@ export function RiverAndTorches() {
     });
     [ford.current, posts.current, bowls.current].forEach((mesh) => { if (mesh) mesh.instanceMatrix.needsUpdate = true; });
   }, [math, fords]);
-  useEffect(() => () => { water.geometry.dispose(); water.material.dispose(); }, [water]);
+  useEffect(() => () => { water.geometry.dispose(); water.material.dispose(); stoneTexture.dispose(); }, [water, stoneTexture]);
   useFrame(({ clock, gl }) => {
     const time = clock.elapsedTime;
     const t = water.material.uniforms["time"]; if (t) t.value = time;
@@ -84,7 +90,7 @@ export function RiverAndTorches() {
   return <group name="river-and-torches">
     <mesh geometry={water.geometry} material={water.material} dispose={null} />
     <instancedMesh ref={ford} args={[undefined, undefined, fords.length]} receiveShadow>
-      <boxGeometry args={[1, 1, 1]} /><meshStandardMaterial color={colors["stone"]} roughness={0.9} flatShading />
+      <boxGeometry args={[1, 1, 1]} /><meshStandardMaterial map={stoneTexture} roughness={0.9} flatShading />
     </instancedMesh>
     <instancedMesh ref={posts} args={[undefined, undefined, TORCH_SPOTS.length]}>
       <cylinderGeometry args={[0.12, 0.2, 1.3, 6]} /><meshStandardMaterial color={colors["stone"]} roughness={0.85} />
