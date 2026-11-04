@@ -8,7 +8,7 @@ export function useTerrainPalette() {
     const ctx = cv.getContext("2d", { willReadFrequently: true });
     if (!ctx) return;
     const css = getComputedStyle(document.documentElement);
-    const resolved = { ...colors };
+    const resolved = { forest: new THREE.Color(), bark: new THREE.Color(), stone: new THREE.Color(), water: new THREE.Color(), foam: new THREE.Color(), flame: new THREE.Color(), ember: new THREE.Color() };
     Object.entries(resolved).forEach(([key, color]) => {
       ctx.fillStyle = css.getPropertyValue(`--terrain-${key}`).trim(); ctx.fillRect(0, 0, 1, 1);
       const p = ctx.getImageData(0, 0, 1, 1).data;
