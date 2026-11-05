@@ -22,6 +22,7 @@ export function Hud({ w, cam, onExit }: { w: World; cam: CamState; onExit: () =>
 
   useEffect(() => {
     const kd = (e: KeyboardEvent) => {
+      if (coach) return;
       if (e.target instanceof HTMLElement && e.target.closest("input,textarea,select")) return;
       const k = e.key.toLowerCase();
       if (k === "q") cmdAbility(w, 0);
@@ -41,7 +42,7 @@ export function Hud({ w, cam, onExit }: { w: World; cam: CamState; onExit: () =>
     window.addEventListener("keydown", kd);
     window.addEventListener("keyup", ku);
     return () => { window.removeEventListener("keydown", kd); window.removeEventListener("keyup", ku); };
-  }, [w, cam]);
+  }, [w, cam, coach]);
 
   if (!s) return null;
   const def = heroById(s.defId);
