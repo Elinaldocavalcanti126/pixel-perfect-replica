@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Architecture
+- Tactical advice streams through a same-origin AI server route with bounded validated match input and server-only Responses helpers; durable provider-denial state prevents replay after reload without storing player statistics.
 - Terrain composites local generated stone/grass albedo tiles against the unchanged walkable mask; a visual-only river uses animated Fresnel highlights with raised ford stones on existing routes, and corridor torches are instanced — enriches the map without modifying movement or adding reflection render passes.
 - Combat feedback uses bounded informational World damage events and fixed-size Three.js VFX pools; post-processing blooms only HDR effect cores, with non-finite scrubbing before bloom and tone mapping afterward — preserves combat balance and toon readability.
 - Dev-only `window.__game` exposes the live `world`, `sim(seconds)`, `move(x,z)` and `ability(index,x,z)`; canvas `data-scene-ready`, `data-damage-numbers`, `data-vfx-particles` and `data-vfx-trails` expose render readiness and pool counts — supports repeatable actual-match verification without duplicate simulation modules.

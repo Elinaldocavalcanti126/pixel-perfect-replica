@@ -8,6 +8,7 @@ import { cmdAbility, cmdStop } from "@/game/game";
 import { buyItem, sellItem, inShopRange } from "@/game/systems/economy";
 import { XP_TABLE } from "@/game/data/heroes";
 import { Minimap } from "./Minimap";
+import { TacticalCoach } from "./TacticalCoach";
 
 const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
 
@@ -17,9 +18,12 @@ export function Hud({ w, cam, onExit }: { w: World; cam: CamState; onExit: () =>
   const [board, setBoard] = useState(false);
   const [paused, setPaused] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [coach, setCoach] = useState(false);
 
   useEffect(() => {
     const kd = (e: KeyboardEvent) => {
+      if (coach) return;
+      if (e.target instanceof HTMLElement && e.target.closest("input,textarea,select")) return;
       const k = e.key.toLowerCase();
       if (k === "q") cmdAbility(w, 0);
       else if (k === "w") cmdAbility(w, 1);
@@ -38,7 +42,7 @@ export function Hud({ w, cam, onExit }: { w: World; cam: CamState; onExit: () =>
     window.addEventListener("keydown", kd);
     window.addEventListener("keyup", ku);
     return () => { window.removeEventListener("keydown", kd); window.removeEventListener("keyup", ku); };
-  }, [w, cam]);
+  }, [w, cam, coach]);
 
   if (!s) return null;
   const def = heroById(s.defId);
@@ -165,9 +169,11 @@ export function Hud({ w, cam, onExit }: { w: World; cam: CamState; onExit: () =>
             ) : <h2 className="font-display text-3xl text-primary">Pausado</h2>}
             <div className="mt-6 flex flex-col gap-2">
               {s.winner === null && <button className="btn-rune" onClick={() => { w.paused = false; setPaused(false); }}>Continuar</button>}
+              <button className="btn-rune btn-rune--ghost" onClick={() => setCoach(true)}>Dicas táticas com IA</button>
               <button className="btn-rune btn-rune--ghost" onClick={onExit}>Sair para o menu</button>
             </div>
           </div>
+          {coach && <TacticalCoach s={s} team={me.team} onClose={() => setCoach(false)} />}
         </div>
       )}
     </div>
