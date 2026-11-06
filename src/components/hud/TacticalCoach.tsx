@@ -54,7 +54,7 @@ export function TacticalCoach({ s, team, onClose }: Props) {
   }
 
   return (
-    <div role="dialog" aria-label="Conselheiro tático" className="pointer-events-auto absolute left-1/2 top-1/2 z-20 max-h-[90vh] w-[min(720px,94vw)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto panel-frame p-5 text-left">
+    <div role="dialog" aria-modal="true" aria-label="Conselheiro tático" className="pointer-events-auto absolute left-1/2 top-1/2 z-20 max-h-[90vh] w-[min(720px,94vw)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto panel-frame bg-card bg-none p-5 text-left">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div><h2 className="font-display text-2xl text-primary">Conselheiro Tático</h2><p className="text-xs text-muted-foreground">Arcana Rift · Análise da partida</p></div>
         <Button variant="ghost" size="icon" aria-label="Fechar conselheiro" title="Fechar conselheiro" onClick={() => { abort.current?.abort(); onClose(); }}><X /></Button>

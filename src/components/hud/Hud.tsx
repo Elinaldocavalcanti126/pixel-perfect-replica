@@ -163,7 +163,7 @@ export function Hud({ w, cam, onExit }: { w: World; cam: CamState; onExit: () =>
 
       {(paused || s.winner !== null) && (
         <div className="pointer-events-auto absolute inset-0 grid place-items-center bg-background/70 backdrop-blur-sm">
-          <div className="panel-frame w-96 p-8 text-center">
+          <div className={`panel-frame w-96 p-8 text-center ${coach ? "invisible" : ""}`}>
             {s.winner !== null ? (
               <h2 className={`font-display text-4xl ${s.winner === 0 ? "text-primary" : "text-destructive"}`}>{s.winner === me.team ? "Vitória" : "Derrota"}</h2>
             ) : <h2 className="font-display text-3xl text-primary">Pausado</h2>}
