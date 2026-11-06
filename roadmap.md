@@ -7,6 +7,14 @@
 - [x] Connect locomotion, attacks, spells, and death to existing simulation state without changing gameplay.
 - [x] Verify actual matches and all hero rendering at desktop and mobile sizes; movement and shield casting checked, console clean and routing test passed.
 
+# Combat readability (Heroes Evolved reference, phase 1)
+- [x] Volumetric crescent slash arcs on melee attacks, sweeping with attack age; verified frozen at impact in a real bot match.
+- [x] Ability range ring + cursor area marker while targeting, and pulsing target-lock ring under the attack target; verified in a real match.
+- [x] Top-center target frame with name, level and HP bar for the focused enemy; verified in a real match.
+- [x] Camera pitch lowered from 55° to 48° for stronger hero silhouettes.
+- [ ] Phase 2: mobile dual-stick controls with fan ability buttons.
+- [ ] Phase 3: HUD restyle (circular ability frames, radial cooldown sweep, segmented HP bars with level badge).
+
 # Hero lighting refinement
 - [x] Add class-colored rim lighting while preserving animated models, textures, and ink outlines.
 - [x] Add a luminous runic selection ring that follows only the controlled hero.
