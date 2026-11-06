@@ -119,9 +119,19 @@ export function CombatVfx({ w }: { w: World }) {
       const tint = palette[5 + Math.max(0, id)];
       if (!tint) continue;
       const age = w.time - e.lastAttackTime;
-      if (e.hero.defId === "warrior" && age >= 0 && age < 0.34 && sl < 32) {
-        quaternion.setFromEuler(new THREE.Euler(-Math.PI / 2, 0, -e.rot + Math.PI * 0.15 + age * 5, "YXZ"));
-        place(slashMesh, sl++, e.pos.x, 1, e.pos.z, 1.55, 1.55, 1.55, tint, (1 - age / 0.34) * 2.8);
+      // Lâmina curva volumosa para ataques corpo a corpo: crescente vertical
+      // à frente do herói que varre com a idade, como nos MOBAs modernos.
+      if (e.stats.range <= 3 && age >= 0 && age < 0.34 && sl < 32) {
+        const t01 = age / 0.34;
+        const reach = e.stats.range + 1.1;
+        const yaw = Math.PI / 2 - e.rot;
+        quaternion.setFromEuler(new THREE.Euler(0, yaw, -0.85 + t01 * 1.9, "YZX"));
+        const grow = 1 + t01 * 1.6;
+        place(
+          slashMesh, sl++,
+          e.pos.x + Math.sin(e.rot) * reach * 0.55, 1.15, e.pos.z + Math.cos(e.rot) * reach * 0.55,
+          reach * grow, reach * grow, reach * grow, tint, (1 - t01) * 3.4,
+        );
       }
       if (sp < 768 && (e.hero.defId === "mage" || e.hero.defId === "support") && e.hero.cds.some((cd) => cd > 0)) {
         quaternion.identity();
@@ -171,7 +181,7 @@ export function CombatVfx({ w }: { w: World }) {
       <meshBasicMaterial toneMapped={false} transparent blending={THREE.AdditiveBlending} depthWrite={false} />
     </instancedMesh>
     <instancedMesh ref={slashes} args={[undefined, undefined, 32]} frustumCulled={false}>
-      <ringGeometry args={[0.9, 1, 32, 1, 0, Math.PI * 0.9]} />
+      <ringGeometry args={[0.62, 1, 28, 1, 0, Math.PI * 0.75]} />
       <meshBasicMaterial toneMapped={false} transparent blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.DoubleSide} />
     </instancedMesh>
   </>;
