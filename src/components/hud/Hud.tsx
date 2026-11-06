@@ -49,6 +49,11 @@ export function Hud({ w, cam, onExit }: { w: World; cam: CamState; onExit: () =>
   const me = w.player!;
   const flash = (m: string | null) => { if (m) { setToast(m); setTimeout(() => setToast(null), 1500); } };
 
+  // Painel do alvo focado (topo central), como nos MOBAs modernos.
+  const tgt = me.attackTarget != null ? w.byId.get(me.attackTarget) : undefined;
+  const showTgt = !!tgt && tgt.alive && tgt.visible && tgt.team !== me.team;
+  const tgtName = tgt?.hero?.name ?? (tgt?.kind === "tower" ? "Torre" : tgt?.kind === "altar" ? "Altar" : tgt?.kind === "monster" ? (tgt.monster?.big ? "Colosso Ancestral" : "Monstro da Selva") : "Lacaio");
+
   return (
     <div className="pointer-events-none absolute inset-0 select-none font-body text-foreground">
       {/* topo: placar */}
@@ -57,6 +62,19 @@ export function Hud({ w, cam, onExit }: { w: World; cam: CamState; onExit: () =>
         <span className="font-display text-sm tracking-widest text-primary">{fmt(s.time)}</span>
         <span className="font-display text-xl text-team-red">{s.teamKills[1]}</span>
       </div>
+
+      {/* painel do alvo focado */}
+      {showTgt && tgt && (
+        <div className="absolute left-1/2 top-14 w-64 -translate-x-1/2 panel-frame px-3 py-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className={`font-display ${tgt.team === 1 ? "text-team-red" : "text-primary"}`}>{tgtName}</span>
+            {tgt.hero && <span className="text-muted-foreground">Nv {tgt.hero.level}</span>}
+          </div>
+          <div className="relative mt-1 h-2.5 overflow-hidden rounded-sm border border-border bg-background">
+            <div className={`h-full ${tgt.team === 1 ? "bg-team-red" : "bg-hp"}`} style={{ width: `${(tgt.hp / tgt.stats.maxHp) * 100}%` }} />
+          </div>
+        </div>
+      )}
 
       {/* feed de abates */}
       <div className="absolute right-3 top-3 flex w-72 flex-col gap-1">
