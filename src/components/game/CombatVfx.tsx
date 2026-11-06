@@ -123,14 +123,14 @@ export function CombatVfx({ w }: { w: World }) {
       // à frente do herói que varre com a idade, como nos MOBAs modernos.
       if (e.stats.range <= 3 && age >= 0 && age < 0.34 && sl < 32) {
         const t01 = age / 0.34;
-        const reach = e.stats.range + 1.1;
+        const reach = e.stats.range + 0.9;
         const yaw = Math.PI / 2 - e.rot;
         quaternion.setFromEuler(new THREE.Euler(0, yaw, -0.85 + t01 * 1.9, "YZX"));
-        const grow = 1 + t01 * 1.6;
+        const grow = 0.7 + t01 * 0.7;
         place(
           slashMesh, sl++,
-          e.pos.x + Math.sin(e.rot) * reach * 0.55, 1.15, e.pos.z + Math.cos(e.rot) * reach * 0.55,
-          reach * grow, reach * grow, reach * grow, tint, (1 - t01) * 3.4,
+          e.pos.x + Math.sin(e.rot) * reach * 0.5, 1.1, e.pos.z + Math.cos(e.rot) * reach * 0.5,
+          reach * grow, reach * grow, reach * grow, tint, (1 - t01) * 1.7,
         );
       }
       if (sp < 768 && (e.hero.defId === "mage" || e.hero.defId === "support") && e.hero.cds.some((cd) => cd > 0)) {
