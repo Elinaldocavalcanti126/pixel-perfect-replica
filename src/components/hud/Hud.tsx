@@ -88,7 +88,7 @@ export function Hud({ w, cam, onExit }: { w: World; cam: CamState; onExit: () =>
       </div>
 
       {/* mensagens */}
-      <div className="absolute left-1/2 top-16 -translate-x-1/2 text-center">
+      <div className="absolute left-1/2 top-28 -translate-x-1/2 text-center">
         {s.messages.map((m, i) => <p key={i} className="font-display text-lg text-primary drop-shadow">{m.text}</p>)}
         {toast && <p className="mt-2 text-sm text-destructive">{toast}</p>}
       </div>
