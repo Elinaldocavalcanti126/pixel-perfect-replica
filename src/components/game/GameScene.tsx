@@ -9,6 +9,7 @@ import { HeroModel, MonsterModel, TowerModel } from "./Units";
 import { Effects, HealthBars, Minions } from "./Instanced";
 import { CombatVfx } from "./CombatVfx";
 import { CombatBloom } from "./CombatBloom";
+import { TargetingRings } from "./TargetingRings";
 
 export interface CamState { x: number; z: number; zoom: number; locked: boolean }
 
@@ -62,7 +63,7 @@ function Controller({ w, cam }: { w: World; cam: CamState }) {
       const k = 1 - Math.exp(-8 * raw);
       cam.x += (me.pos.x - cam.x) * k; cam.z += (me.pos.z - cam.z) * k;
     }
-    const a = (55 * Math.PI) / 180;
+    const a = (48 * Math.PI) / 180;
     camera.position.set(cam.x, Math.sin(a) * cam.zoom, cam.z + Math.cos(a) * cam.zoom);
     camera.lookAt(cam.x, 0, cam.z);
   });
@@ -106,6 +107,7 @@ export function GameScene({ w, cam }: { w: World; cam: CamState }) {
       <Minions w={w} />
       <Effects w={w} />
       <CombatVfx w={w} />
+      <TargetingRings w={w} />
       <HealthBars w={w} />
       <Controller w={w} cam={cam} />
       <CombatBloom />
