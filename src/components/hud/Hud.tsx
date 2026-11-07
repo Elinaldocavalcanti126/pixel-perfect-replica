@@ -116,14 +116,14 @@ export function Hud({ w, cam, input, onExit }: { w: World; cam: CamState; input:
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {ITEMS.map((it) => (
               <Button variant="ghost" key={it.id} onClick={() => flash(buyItem(w, me, it.id))}
-                className={`rounded border border-border bg-secondary/70 p-2 text-left transition hover:border-primary ${s.gold < it.cost ? "opacity-50" : ""}`}>
+                className={`h-auto flex-col items-stretch whitespace-normal rounded border border-border bg-secondary/70 p-2 text-left transition hover:border-primary ${s.gold < it.cost ? "opacity-50" : ""}`}>
                 <div className="flex items-center gap-2"><span className="text-xl text-primary">{it.icon}</span><span className="text-sm">{it.name}</span></div>
                 <p className="text-[11px] text-muted-foreground">{it.desc}</p>
                 <p className="text-xs text-primary">◈ {it.cost}</p>
               </Button>
             ))}
           </div>
-          <div className="mt-3 flex gap-2">{s.items.map((id, i) => <Button variant="outline" size="icon" key={i} disabled={!id} title={id ? `${itemById(id)?.name} · Vender` : "Vazio"} onClick={() => flash(sellItem(w, me, i))}>{id ? itemById(id)?.icon : "·"}</Button>)}</div>
+          <div className="mt-3 flex gap-2">{s.items.map((id, i) => <Button variant="outline" size="icon" key={i} disabled={!id} title={id ? `${itemById(id)?.name} · Vender` : "Vazio"} onClick={() => sellItem(w, me, i)}>{id ? itemById(id)?.icon : "·"}</Button>)}</div>
           <Button variant="ghost" onClick={() => setShop(false)} className="mt-4 w-full rounded border border-border py-1.5 text-sm hover:border-primary">Fechar (P)</Button>
         </div>
       )}

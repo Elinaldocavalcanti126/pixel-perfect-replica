@@ -147,7 +147,7 @@
 .combat-minimap p { display: none; }
 .movement-stick { position: absolute; bottom: max(42px, env(safe-area-inset-bottom)); left: 35px; width: 138px; height: 138px; padding: 0; border-radius: 50%; border: 2px solid var(--control-metal); background: radial-gradient(circle, var(--control-surface) 45%, var(--control-shadow)); box-shadow: inset 0 0 0 6px var(--control-surface), 0 3px 12px var(--control-shadow); }
 .movement-stick:hover { background: var(--control-surface); }
-.stick-knob { display: grid; place-items: center; width:  sixty; width: 60px; height: 60px; z-index: 1; border: 2px solid var(--control-metal); border-radius: 50%; background: radial-gradient(circle at 35% 25%, var(--accent), var(--background)); box-shadow: 0 4px 12px var(--control-shadow); color: var(--primary); }
+.stick-knob { display: grid; place-items: center; width: 60px; height: 60px; z-index: 1; border: 2px solid var(--control-metal); border-radius: 50%; background: radial-gradient(circle at 35% 25%, var(--accent), var(--background)); box-shadow: 0 4px 12px var(--control-shadow); color: var(--primary); }
 .stick-axis { position: absolute; inset: 22px; border: 1px solid var(--border); border-radius: 50%; }
 .ability-fan { position: absolute; bottom: max(28px, env(safe-area-inset-bottom)); right: 25px; width: 250px; height: 240px; }
 .skill-orb { position: absolute; width: 70px; height: 70px; padding: 0; border-radius: 50%; border: 3px solid var(--control-metal); overflow: visible; background: var(--background); box-shadow: 0 0 0 2px var(--control-shadow), inset 0 0 0 1px var(--control-highlight), 0 4px 14px var(--control-shadow); }
