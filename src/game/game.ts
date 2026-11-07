@@ -68,17 +68,40 @@ export function cmdStop(w: World) {
   me.path = []; me.attackTarget = null;
 }
 
+/** Touch movement uses the same wall-aware pathfinder without click VFX or cancelling aim. */
+export function cmdMoveStick(w: World, direction: Vec) {
+  const me = w.player;
+  if (!me?.alive || w.paused || w.winner !== null) return;
+  if (Math.hypot(direction.x, direction.z) < 0.01) { cmdStop(w); return; }
+  me.attackTarget = null;
+  me.path = findPath(me.pos, { x: me.pos.x + direction.x * 2, z: me.pos.z + direction.z * 2 });
+}
+
+export function cmdAttackNearest(w: World) {
+  const me = w.player;
+  if (!me?.alive || w.paused || w.winner !== null) return;
+  const current = me.attackTarget === null ? undefined : w.byId.get(me.attackTarget);
+  if (current?.visible && current.team !== me.team && w.isTargetable(current) && w.dist(me.pos, current.pos) <= me.stats.range + current.radius + 3) return;
+  const target = w.entities.filter((e) => e.team !== me.team && e.visible && w.isTargetable(e) && w.dist(me.pos, e.pos) <= me.stats.range + e.radius + 3)
+    .sort((a, b) => w.dist(me.pos, a.pos) - w.dist(me.pos, b.pos))[0];
+  if (!target) return;
+  me.attackTarget = target.id;
+  me.repathAt = 0;
+}
+
 export function cmdAbility(w: World, idx: number) {
   const me = w.player;
   if (!me || !canCast(w, me, idx)) return;
-  const def = heroById(me.hero!.defId).abilities[idx]!;
+  if (!me.hero || w.paused || w.winner !== null) return;
+  const def = heroById(me.hero.defId).abilities[idx];
+  if (!def) return;
   if (def.targeted) w.input.targeting = w.input.targeting === idx ? -1 : idx;
   else castAbility(w, me, idx, w.input.mouse);
 }
 
 export function cmdConfirm(w: World) {
   const me = w.player;
-  if (!me || w.input.targeting < 0) return;
+  if (!me || w.input.targeting < 0 || w.paused || w.winner !== null) return;
   castAbility(w, me, w.input.targeting, w.input.mouse);
   w.input.targeting = -1;
 }

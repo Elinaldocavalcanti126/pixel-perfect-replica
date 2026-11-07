@@ -12,8 +12,8 @@
 - [x] Ability range ring + cursor area marker while targeting, and pulsing target-lock ring under the attack target; verified in a real match.
 - [x] Top-center target frame with name, level and HP bar for the focused enemy; verified in a real match.
 - [x] Camera pitch lowered from 55° to 48° for stronger hero silhouettes.
-- [ ] Phase 2: mobile dual-stick controls with fan ability buttons.
-- [ ] Phase 3: HUD restyle (circular ability frames, radial cooldown sweep, segmented HP bars with level badge).
+- [ ] Add mobile movement stick, drag-to-aim abilities and a dominant attack button through existing player commands.
+- [ ] Restyle combat HUD with original illustrated circular abilities, radial cooldowns, segmented HP and compact mobile layout; verify real match controls at desktop and mobile sizes.
 
 # Hero lighting refinement
 - [x] Add class-colored rim lighting while preserving animated models, textures, and ink outlines.

@@ -3,7 +3,8 @@ import { Environment, Lightformer } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { World } from "@/game/ecs/world";
-import { step, TICK, cmdRightClick, cmdConfirm } from "@/game/game";
+import { step, TICK, cmdRightClick, cmdConfirm, cmdMoveStick, cmdAttackNearest } from "@/game/game";
+import type { TouchInput } from "@/game/touch-input";
 import { MapView } from "./MapView";
 import { HeroModel, MonsterModel, TowerModel } from "./Units";
 import { Effects, HealthBars, Minions } from "./Instanced";
@@ -13,13 +14,14 @@ import { TargetingRings } from "./TargetingRings";
 
 export interface CamState { x: number; z: number; zoom: number; locked: boolean }
 
-function Controller({ w, cam }: { w: World; cam: CamState }) {
+function Controller({ w, cam, input }: { w: World; cam: CamState; input: TouchInput }) {
   const { camera, gl } = useThree();
   const acc = useRef(0);
   const ndc = useRef(new THREE.Vector2(0, 0));
   const ray = useMemo(() => new THREE.Raycaster(), []);
   const plane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), []);
   const hit = useMemo(() => new THREE.Vector3(), []);
+  const nextInput = useRef(0);
 
   useEffect(() => {
     const el = gl.domElement;
@@ -54,10 +56,15 @@ function Controller({ w, cam }: { w: World; cam: CamState }) {
   }, [gl, camera, w, cam, ray, plane, hit]);
 
   useFrame((_, raw) => {
+    if (w.time >= nextInput.current) {
+      if (input.moving) { cmdMoveStick(w, input.move); cam.locked = true; }
+      else if (input.attacking) cmdAttackNearest(w);
+      nextInput.current = w.time + 0.1;
+    }
     acc.current += Math.min(raw, 0.25);
     while (acc.current >= TICK) { step(w); acc.current -= TICK; }
     ray.setFromCamera(ndc.current, camera);
-    if (ray.ray.intersectPlane(plane, hit)) w.input.mouse = { x: hit.x, z: hit.z };
+    if (!input.aiming && ray.ray.intersectPlane(plane, hit)) w.input.mouse = { x: hit.x, z: hit.z };
     const me = w.player;
     if (cam.locked && me) {
       const k = 1 - Math.exp(-8 * raw);
@@ -89,7 +96,7 @@ function Entities({ w }: { w: World }) {
   );
 }
 
-export function GameScene({ w, cam }: { w: World; cam: CamState }) {
+export function GameScene({ w, cam, input }: { w: World; cam: CamState; input: TouchInput }) {
   return (
     <Canvas shadows dpr={[1, 1.75]} camera={{ fov: 42, near: 0.5, far: 200, position: [0, 30, 20] }} className="absolute inset-0">
       <color attach="background" args={["#0e1612"]} />
@@ -109,7 +116,7 @@ export function GameScene({ w, cam }: { w: World; cam: CamState }) {
       <CombatVfx w={w} />
       <TargetingRings w={w} />
       <HealthBars w={w} />
-      <Controller w={w} cam={cam} />
+      <Controller w={w} cam={cam} input={input} />
       <CombatBloom />
     </Canvas>
   );

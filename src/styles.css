@@ -110,6 +110,13 @@
   --terrain-foam: oklch(0.84 0.05 190);
   --terrain-flame: oklch(0.93 0.15 85);
   --terrain-ember: oklch(0.83 0.19 45);
+  --control-metal: oklch(0.64 0.08 85);
+  --control-highlight: oklch(0.94 0.08 90);
+  --control-shadow: oklch(0.08 0.015 150 / 75%);
+  --control-surface: oklch(0.18 0.025 200 / 82%);
+  --control-glow: oklch(0.8 0.12 85 / 35%);
+  --control-cooldown: oklch(0.08 0.02 220 / 78%);
+  --control-clear: oklch(0 0 0 / 0%);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -124,6 +131,74 @@
   --sidebar-border: oklch(0.42 0.04 85 / 55%);
   --sidebar-ring: oklch(0.8 0.12 85);
 }
+
+/* Original illustrated combat controls, anchored clear of both thumb zones. */
+.combat-actions { position: absolute; top: 12px; right: 12px; display: flex; align-items: center; gap: 5px; background: var(--control-surface); border: 1px solid var(--border); border-radius: 6px; }
+.combat-vitals { position: absolute; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); transform: translateX(-50%); width: 270px; filter: drop-shadow(0 2px 3px var(--control-shadow)); }
+.level-medallion { display: grid; place-items: center; width: 25px; height: 25px; flex-shrink: 0; border: 1px solid var(--primary); border-radius: 50%; background: var(--background); color: var(--primary); }
+.combat-vital { position: relative; height: 16px; margin-top: 3px; border: 1px solid var(--control-metal); background: var(--control-surface); overflow: hidden; }
+.combat-vital-mana { height: 12px; }
+.vital-fill { height: 100%; background: var(--hp); }
+.combat-vital-mana .vital-fill { background: var(--mana); }
+.vital-label { position: absolute; inset: 0; display: grid; place-items: center; font-size: 10px; line-height: 1; text-shadow: 0 1px 2px var(--control-shadow); }
+.vital-segments { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, var(--control-clear) 0, var(--control-clear) calc(10% - 1px), var(--control-shadow) calc(10% - 1px), var(--control-shadow) 10%); }
+.combat-minimap { position: absolute; top: 12px; left: 12px; width: 180px; }
+.combat-minimap canvas { width: 100%; height: auto; }
+.combat-minimap p { display: none; }
+.movement-stick { position: absolute; bottom: max(42px, env(safe-area-inset-bottom)); left: 35px; width: 138px; height: 138px; padding: 0; border-radius: 50%; border: 2px solid var(--control-metal); background: radial-gradient(circle, var(--control-surface) 45%, var(--control-shadow)); box-shadow: inset 0 0 0 6px var(--control-surface), 0 3px 12px var(--control-shadow); }
+.movement-stick:hover { background: var(--control-surface); }
+.stick-knob { display: grid; place-items: center; width: 60px; height: 60px; z-index: 1; border: 2px solid var(--control-metal); border-radius: 50%; background: radial-gradient(circle at 35% 25%, var(--accent), var(--background)); box-shadow: 0 4px 12px var(--control-shadow); color: var(--primary); }
+.stick-axis { position: absolute; inset: 22px; border: 1px solid var(--border); border-radius: 50%; }
+.ability-fan { position: absolute; bottom: max(28px, env(safe-area-inset-bottom)); right: 25px; width: 250px; height: 240px; }
+.skill-orb { position: absolute; width: 70px; height: 70px; padding: 0; border-radius: 50%; border: 3px solid var(--control-metal); overflow: visible; background: var(--background); box-shadow: 0 0 0 2px var(--control-shadow), inset 0 0 0 1px var(--control-highlight), 0 4px 14px var(--control-shadow); }
+.skill-orb:disabled { opacity: 0.65; }
+.skill-orb-0 { bottom: 0; left: 0; }
+.skill-orb-1 { bottom: 84px; left: 15px; }
+.skill-orb-2 { top: 4px; left: 84px; }
+.skill-orb-3 { top: 31px; right: 0; width: 78px; height: 78px; border-color: var(--primary); }
+.skill-art { position: absolute; inset: 0; border-radius: inherit; background-image: var(--atlas); background-size: 400% 400%; background-position: var(--icon-x) var(--icon-y); }
+.cooldown-sweep { position: absolute; inset: 0; border-radius: inherit; background: conic-gradient(var(--control-cooldown) var(--cooldown), var(--control-clear) 0); }
+.skill-key { position: absolute; left: -1px; bottom: -3px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--control-metal); background: var(--background); color: var(--primary); font-size: 11px; }
+.skill-mana { position: absolute; right: 2px; bottom: 0; color: var(--team-blue); font-size: 10px; text-shadow: 0 1px 3px var(--control-shadow); }
+.cooldown-value { position: relative; font-size: 23px; text-shadow: 0 2px 4px var(--control-shadow); }
+.skill-orb-aiming { border-color: var(--team-blue); box-shadow: 0 0 20px var(--control-glow); }
+.attack-orb { position: absolute; bottom: 5px; right: 3px; display: flex; flex-direction: column; gap: 2px; width: 104px; height: 104px; padding: 0; border: 4px solid var(--primary); border-radius: 50%; background: radial-gradient(circle at 40% 30%, var(--accent), var(--background)); color: var(--control-highlight); box-shadow: inset 0 0 0 3px var(--control-metal), 0 0 20px var(--control-shadow); }
+.attack-orb svg { width: 39px; height: 39px; }
+.attack-orb span { font-size: 10px; }
+.attack-orb:active { border-color: var(--control-highlight); }
+.aim-cancel { position: absolute; left: -32px; top: 12px; border-radius: 50%; background: var(--control-surface); color: var(--destructive); }
+@media (max-width: 700px) {
+  .combat-minimap { width: 114px; top: 8px; left: 8px; }
+  .combat-score { top: 8px; gap: 10px; padding: 4px 12px; }
+  .combat-target { width: 170px; top: 52px; font-size: 10px; }
+  .combat-feed { top: 106px; width: 180px; }
+  .combat-feed > div { font-size: 10px; }
+  .combat-actions { top: 8px; right: 8px; }
+  .combat-vitals { bottom: 18px; width: 180px; }
+  .ability-fan { right: 12px; bottom: 102px; width: 226px; height: 232px; }
+  .skill-orb { width: 64px; height: 64px; }
+  .skill-orb-1 { left: 10px; }
+  .skill-orb-2 { left: 70px; }
+  .skill-orb-3 { width: 72px; height: 72px; }
+  .attack-orb { width: 92px; height: 92px; }
+  .movement-stick { left: 20px; bottom: 111px; width: 126px; height: 126px; }
+}
+@media (max-height: 600px) and (min-width: 600px) {
+  .movement-stick { bottom: 25px; left: 20px; width: 126px; height: 126px; }
+  .ability-fan { bottom: 15px; right: 20px; height: 225px; }
+  .combat-minimap { width: 120px; }
+  .combat-vitals { width: 230px; bottom: 15px; }
+  .combat-feed { display: none; }
+}
+@media (max-width: 400px) {
+  .ability-fan { right: 8px; width: 205px; bottom: 155px; }
+  .movement-stick { left: 16px; bottom: 95px; width: 110px; height: 110px; }
+  .skill-orb-2 { left: 55px; }
+  .combat-actions { gap: 0; }
+  .combat-actions > span { display: none; }
+  .combat-target { width: 150px; }
+}
+@media (prefers-reduced-motion: reduce) { .skill-orb, .attack-orb, .movement-stick { transition: none; } }
 
 @layer base {
   * {
