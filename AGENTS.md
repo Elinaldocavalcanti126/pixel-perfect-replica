@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Architecture
+- Mobile combat uses match-owned ref input sampled by the scene controller and wall-aware player commands; original ability atlas art and cooldown overlays stay in the HUD — keeps touch aiming independent of mouse rays and leaves combat balance unchanged.
 - Tactical advice streams through a same-origin AI server route with bounded validated match input and server-only Responses helpers; durable provider-denial state prevents replay after reload without storing player statistics.
 - Terrain composites local generated stone/grass albedo tiles against the unchanged walkable mask; a visual-only river uses animated Fresnel highlights with raised ford stones on existing routes, and corridor torches are instanced — enriches the map without modifying movement or adding reflection render passes.
 - Combat feedback uses bounded informational World damage events and fixed-size Three.js VFX pools; post-processing blooms only HDR effect cores, with non-finite scrubbing before bloom and tone mapping afterward — preserves combat balance and toon readability.
