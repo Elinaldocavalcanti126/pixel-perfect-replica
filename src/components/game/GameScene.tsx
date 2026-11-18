@@ -98,7 +98,7 @@ function Entities({ w }: { w: World }) {
 
 export function GameScene({ w, cam, input }: { w: World; cam: CamState; input: TouchInput }) {
   return (
-    <Canvas shadows dpr={[1, 1.75]} camera={{ fov: 42, near: 0.5, far: 200, position: [0, 30, 20] }} className="absolute inset-0">
+    <Canvas shadows="percentage" dpr={[1, 1.75]} camera={{ fov: 42, near: 0.5, far: 200, position: [0, 30, 20] }} className="absolute inset-0">
       <color attach="background" args={["#0e1612"]} />
       <fog attach="fog" args={["#0e1612", 45, 95]} />
       <hemisphereLight args={["#d8e2ff", "#2a2418", 0.85]} />

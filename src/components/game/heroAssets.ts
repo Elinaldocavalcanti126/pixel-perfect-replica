@@ -1,21 +1,67 @@
-import warrior from "@/assets/heroes/thorvak.glb.asset.json";
-import mage from "@/assets/heroes/ilyra.glb.asset.json";
-import archer from "@/assets/heroes/kaelis.glb.asset.json";
-import support from "@/assets/heroes/seravin.glb.asset.json";
 import type { HeroClips } from "./heroAnimation";
 
 export interface HeroAsset {
   url: string;
+  animationUrl?: string;
+  weapon?: { url: string; anchor: string; pivot: string };
   accessories: string[];
   height: number;
   clips: HeroClips;
 }
-const spells = { idle: "Idle", run: "Running_A", attack: "Spellcast_Shoot", cast: "Spellcast_Raise", death: "Death_A" };
+
+const allParts = ["*"];
+const clips = (attack: string, cast = attack): HeroClips => ({
+  idle: "Idle",
+  run: "Run",
+  attack,
+  cast,
+  death: "Death",
+});
+
+/** CC0 fantasy rigs with class-specific combat clips for clearer lane silhouettes. */
 export const HERO_ASSETS: Record<string, HeroAsset> = {
-  warrior: { url: warrior.url, accessories: ["1H_Sword", "Round_Shield", "Knight_Helmet", "Knight_Cape"], height: 2.25,
-    clips: { ...spells, attack: "1H_Melee_Attack_Slice_Horizontal", cast: "Block" } },
-  mage: { url: mage.url, accessories: ["1H_Wand", "Spellbook_open", "Mage_Hat", "Mage_Cape"], height: 2.3, clips: spells },
-  archer: { url: archer.url, accessories: ["2H_Crossbow", "Rogue_Cape"], height: 2.15,
-    clips: { ...spells, attack: "2H_Ranged_Shoot", cast: "1H_Ranged_Shoot" } },
-  support: { url: support.url, accessories: ["2H_Staff", "Spellbook", "Mage_Cape"], height: 2.15, clips: spells },
+  warrior: {
+    url: "/models/heroes/quaternius/Warrior.glb",
+    accessories: allParts,
+    height: 2.35,
+    clips: clips("Sword_Attack", "Sword_AttackFast"),
+  },
+  mage: {
+    url: "/models/heroes/quaternius/Wizard.glb",
+    accessories: allParts,
+    height: 2.3,
+    clips: clips("Staff_Attack", "Spell1"),
+  },
+  archer: {
+    url: "/models/heroes/quaternius-modular/male-ranger/Male_Ranger.gltf",
+    animationUrl: "/models/animations/quaternius-ual1/UAL1_Standard.glb",
+    weapon: { url: "/models/heroes/quaternius/Ranger.glb", anchor: "hand_r", pivot: "Weapon.R" },
+    accessories: allParts,
+    height: 2.3,
+    clips: {
+      idle: "Idle_Loop",
+      run: "Jog_Fwd_Loop",
+      attack: "Pistol_Shoot",
+      cast: "Spell_Simple_Shoot",
+      death: "Death01",
+    },
+  },
+  support: {
+    url: "/models/heroes/quaternius/Cleric.glb",
+    accessories: allParts,
+    height: 2.3,
+    clips: clips("Staff_Attack", "Spell1"),
+  },
+  veyra: {
+    url: "/models/heroes/quaternius/Rogue.glb",
+    accessories: allParts,
+    height: 2.22,
+    clips: clips("Dagger_Attack", "Dagger_Attack2"),
+  },
+  maelis: {
+    url: "/models/heroes/quaternius/Monk.glb",
+    accessories: allParts,
+    height: 2.25,
+    clips: clips("Attack2", "Punch"),
+  },
 };

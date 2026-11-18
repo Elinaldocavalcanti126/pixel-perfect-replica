@@ -86,8 +86,17 @@ export function MapView() {
     const m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(), p = new THREE.Vector3();
     spots.trees.forEach((t, i) => {
       m.compose(p.set(t.x, 0.6 * t.s, t.z), q.identity(), s.set(t.s, t.s, t.s)); trunkMesh.setMatrixAt(i, m);
-      m.compose(p.set(t.x, 2 * t.s, t.z), q, s.set(t.s, t.s * (1 + (i % 3) * 0.15), t.s)); crownMesh.setMatrixAt(i, m);
-      crownMesh.setColorAt(i, (colors["forest"] ?? new THREE.Color()).clone().multiplyScalar(1.8 + (i % 5) * 0.1));
+      // Three overlapping foliage tiers replace the single bare cone with a
+      // fuller, varied canopy while retaining a low draw-call count.
+      for (let tier = 0; tier < 3; tier++) {
+        const index = i * 3 + tier;
+        const spread = 1 - tier * 0.22;
+        m.compose(p.set(t.x, (1.2 + tier * 0.76) * t.s, t.z), q, s.set(t.s * spread, t.s * (1.35 - tier * 0.08), t.s * spread));
+        crownMesh.setMatrixAt(index, m);
+        const foliage = (colors["forest"] ?? new THREE.Color()).clone().multiplyScalar(1.55 + tier * 0.16 + (i % 4) * 0.06);
+        if (i % 3 === 0) foliage.offsetHSL(0.025, 0.08, 0.015);
+        crownMesh.setColorAt(index, foliage);
+      }
     });
     spots.rk.forEach((t, i) => {
       m.compose(p.set(t.x, 0.3 * t.s, t.z), q.setFromEuler(new THREE.Euler(0, t.ry, 0)), s.set(t.s, t.s * 0.7, t.s)); rockMesh.setMatrixAt(i, m);
@@ -109,9 +118,9 @@ export function MapView() {
         <cylinderGeometry args={[0.15, 0.25, 1.2, 5]} />
         <meshStandardMaterial color={colors["bark"]} flatShading />
       </instancedMesh>
-      <instancedMesh ref={crowns} args={[undefined, undefined, spots.trees.length]}>
-        <coneGeometry args={[1.1, 2.6, 6]} />
-        <meshStandardMaterial flatShading roughness={0.9} />
+      <instancedMesh ref={crowns} args={[undefined, undefined, spots.trees.length * 3]}>
+        <coneGeometry args={[1.05, 1.8, 7]} />
+        <meshStandardMaterial flatShading roughness={0.88} />
       </instancedMesh>
       <instancedMesh ref={rocks} args={[undefined, undefined, spots.rk.length]}>
         <dodecahedronGeometry args={[0.8, 0]} />

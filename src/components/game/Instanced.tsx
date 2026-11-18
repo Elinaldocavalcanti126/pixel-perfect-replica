@@ -16,6 +16,9 @@ const UPQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0,
 export function Minions({ w }: { w: World }) {
   const body = useRef<THREE.InstancedMesh>(null);
   const head = useRef<THREE.InstancedMesh>(null);
+  const helmets = useRef<THREE.InstancedMesh>(null);
+  const shields = useRef<THREE.InstancedMesh>(null);
+  const weapons = useRef<THREE.InstancedMesh>(null);
   const render = useRef(new Map<number, { x: number; z: number }>());
   useFrame((_, dt) => {
     let n = 0;
@@ -35,13 +38,30 @@ export function Minions({ w }: { w: World }) {
       body.current!.setMatrixAt(n, M);
       M.compose(P.set(r.x, (0.95 + bob) * sc, r.z), Q, S.set(sc, sc, sc));
       head.current!.setMatrixAt(n, M);
-      C.set(e.team === 0 ? (e.minion.ranged ? 0x6fa0e8 : 0x3d6fb8) : e.minion.ranged ? 0xe88a6f : 0xb84a3d);
+      const teamColor = e.team === 0 ? 0x397ed1 : 0xc94e45;
+      C.set(teamColor).multiplyScalar(e.minion.ranged ? 1.22 : 0.88);
       body.current!.setColorAt(n, C);
+      // A layered helmet, shield and weapon give each wave unit a readable
+      // armored silhouette while keeping the whole wave instanced.
+      M.compose(P.set(r.x, (1.12 + bob) * sc, r.z), Q, S.set(0.34 * sc, 0.24 * sc, 0.34 * sc));
+      helmets.current!.setMatrixAt(n, M);
+      C.set(e.team === 0 ? 0x9bc7ff : 0xffb09a);
+      helmets.current!.setColorAt(n, C);
+      const shieldScale = e.minion.ranged ? 0.001 : sc;
+      M.compose(P.set(r.x + Math.sin(e.rot) * 0.36, (0.56 + bob) * sc, r.z + Math.cos(e.rot) * 0.36), Q, S.set(0.38 * shieldScale, 0.43 * shieldScale, 0.12 * shieldScale));
+      shields.current!.setMatrixAt(n, M);
+      C.set(teamColor).lerp(new THREE.Color(0xe0c98e), 0.38);
+      shields.current!.setColorAt(n, C);
+      const weaponScale = e.minion.ranged ? 0.001 : sc;
+      M.compose(P.set(r.x - Math.sin(e.rot) * 0.32, (0.55 + bob) * sc, r.z + Math.cos(e.rot) * 0.32), Q, S.set(0.1 * weaponScale, 0.52 * weaponScale, 0.1 * weaponScale));
+      weapons.current!.setMatrixAt(n, M);
+      C.set(0xe4dfd2);
+      weapons.current!.setColorAt(n, C);
       n++;
       if (n >= 200) break;
     }
     if (w.tick % 60 === 0) for (const id of render.current.keys()) if (!w.byId.has(id)) render.current.delete(id);
-    for (const im of [body.current!, head.current!]) {
+    for (const im of [body.current!, head.current!, helmets.current!, shields.current!, weapons.current!]) {
       im.count = n;
       im.instanceMatrix.needsUpdate = true;
       if (im.instanceColor) im.instanceColor.needsUpdate = true;
@@ -54,8 +74,20 @@ export function Minions({ w }: { w: World }) {
         <meshStandardMaterial flatShading />
       </instancedMesh>
       <instancedMesh ref={head} args={[undefined, undefined, 200]} frustumCulled={false}>
-        <icosahedronGeometry args={[0.22, 0]} />
+        <sphereGeometry args={[0.2, 8, 6]} />
         <meshStandardMaterial color="#d8c8a8" flatShading />
+      </instancedMesh>
+      <instancedMesh ref={helmets} args={[undefined, undefined, 200]} frustumCulled={false}>
+        <coneGeometry args={[0.32, 0.28, 6]} />
+        <meshStandardMaterial metalness={0.48} roughness={0.38} flatShading />
+      </instancedMesh>
+      <instancedMesh ref={shields} args={[undefined, undefined, 200]} frustumCulled={false}>
+        <dodecahedronGeometry args={[0.5, 0]} />
+        <meshStandardMaterial metalness={0.32} roughness={0.48} flatShading />
+      </instancedMesh>
+      <instancedMesh ref={weapons} args={[undefined, undefined, 200]} frustumCulled={false}>
+        <boxGeometry args={[0.12, 1, 0.12]} />
+        <meshStandardMaterial color="#e4dfd2" metalness={0.64} roughness={0.3} flatShading />
       </instancedMesh>
     </>
   );

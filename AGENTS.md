@@ -18,7 +18,7 @@
 - Game state lives outside React in `src/game` (lightweight ECS World + systems, fixed 30 Hz tick); React only renders the 3D view and HUD — keeps simulation deterministic and ready for networked multiplayer.
 - Player actions go through command functions in `src/game/game.ts` — they are the seam for future network input sync.
 - Pathfinding is grid A* over the walkable map with line-of-sight smoothing — avoids a navmesh asset pipeline.
-- Hero presentation uses per-instance SkeletonUtils clones of CDN-hosted CC0 GLBs, with useAnimations driven by existing movement, attack timestamps, and cooldown changes — keeps visual animation independent of simulation rules.
+- Hero presentation uses per-instance SkeletonUtils clones of locally bundled CC0 GLBs, with useAnimations driven by existing movement, attack timestamps, and cooldown changes — keeps visual animation independent of simulation rules.
 - Imported hero materials use stepped toon lighting and skeleton-bound outlines; retain source textures and dispose only instance-owned materials — preserves character identity without corrupting shared GLTF caches.
 - Hero rim lighting and the controlled hero's ground decal resolve colors from global CSS tokens; lighting is added after skinned normals and decals follow the visual root without changing simulation — keeps theming and skeletal movement consistent.
 - Aim feedback is visual-only: TargetingRings reads world state per frame (range ring while `input.targeting >= 0`, pulsing lock ring under `attackTarget`), melee slash arcs are instanced crescent meshes swept by attack age in CombatVfx, and the HUD target frame reads `player.attackTarget` — none of them write to the simulation.

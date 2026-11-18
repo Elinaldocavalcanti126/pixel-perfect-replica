@@ -10,25 +10,33 @@ import { createHeroOutline, createHeroRamp, toonMaterial } from "./heroMaterials
 import { inPlaceClips, playHeroClip, type HeroMotion } from "./heroAnimation";
 import { useHeroColors } from "./heroVisuals";
 import { HeroSelectionRing } from "./HeroSelectionRing";
+import { HeroRegalia } from "./HeroRegalia";
 
 function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
   const root = useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF(asset.url);
+  const animationSource = useGLTF(asset.animationUrl ?? asset.url);
+  const weaponSource = useGLTF(asset.weapon?.url ?? asset.url);
   const colors = useHeroColors(e.hero?.defId ?? "warrior", e.team);
   const rig = useMemo(() => {
     const object = clone(scene);
+    if (asset.weapon) {
+      const anchor = object.getObjectByName(asset.weapon.anchor);
+      const sourcePivot = weaponSource.scene.getObjectByName(asset.weapon.pivot);
+      if (anchor && sourcePivot) anchor.add(clone(sourcePivot));
+    }
     const ramp = createHeroRamp();
     const materials: THREE.Material[] = [];
     const meshes: THREE.Mesh[] = [];
+    const includeAll = asset.accessories.includes("*");
     object.traverse((o) => {
       if (!(o instanceof THREE.Mesh)) return;
       const bodyPart = /^(Knight|Mage|Rogue)_(Arm|Body|Head|Leg)/.test(o.name);
-      o.visible = bodyPart || asset.accessories.includes(o.name);
+      o.visible = includeAll || bodyPart || asset.accessories.includes(o.name);
       if (!o.visible) return;
+      const accessory = !includeAll && asset.accessories.includes(o.name);
       const convert = (source: THREE.Material) => {
-        const mat = toonMaterial(source, ramp, colors.rim);
-        // Different costumes, not team tints: retain readable class identities.
-        if (e.hero?.defId === "support") mat.color.setRGB(0.72, 1, 0.83);
+        const mat = toonMaterial(source, ramp, colors.rim, colors.tint, colors.accent, accessory);
         materials.push(mat);
         return mat;
       };
@@ -44,7 +52,7 @@ function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
     const size = box.getSize(new THREE.Vector3());
     const scale = asset.height / (size.y || 1);
     const center = box.getCenter(new THREE.Vector3());
-    const outline = createHeroOutline(new THREE.Color(0.025, 0.035, 0.055), 0.015 / scale);
+    const outline = createHeroOutline(new THREE.Color(0.018, 0.026, 0.045), 0.021 / scale);
     materials.push(outline);
     for (const mesh of meshes) {
       let hull: THREE.Mesh;
@@ -62,8 +70,8 @@ function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
       mesh.add(hull);
     }
     return { object, scale, offset: [-center.x * scale, -box.min.y * scale, -center.z * scale] as [number, number, number], materials, ramp };
-  }, [scene, asset, e, colors]);
-  const clips = useMemo(() => inPlaceClips(animations), [animations]);
+  }, [scene, weaponSource.scene, asset, e, colors]);
+  const clips = useMemo(() => inPlaceClips(asset.animationUrl ? animationSource.animations : animations), [asset.animationUrl, animationSource.animations, animations]);
   const { actions } = useAnimations(clips, root);
   const state = useRef({ previous: null as string | null, motion: "idle" as HeroMotion, until: 0,
     attack: e.lastAttackTime, cds: [...(e.hero?.cds ?? [])], alive: e.alive });
@@ -114,8 +122,9 @@ function Rig({ w, e, asset }: { w: World; e: Entity; asset: HeroAsset }) {
   });
 
   return <group ref={root} name={`hero-${e.id}`} position={[e.pos.x, 0, e.pos.z]}>
-    {e.hero?.isPlayer && <HeroSelectionRing e={e} color={colors.team} />}
+    <HeroSelectionRing e={e} color={colors.team} />
     <group position={rig.offset} scale={rig.scale}><primitive object={rig.object} dispose={null} /></group>
+    <HeroRegalia heroId={e.hero?.defId ?? "warrior"} />
   </group>;
 }
 

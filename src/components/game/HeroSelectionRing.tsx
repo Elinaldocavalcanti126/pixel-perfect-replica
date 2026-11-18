@@ -9,9 +9,10 @@ export function HeroSelectionRing({ e, color }: { e: Entity; color: THREE.Color 
   const mesh = useRef<THREE.Mesh>(null);
   const reducedMotion = useRef(false);
   const time = useMemo(() => ({ value: 0 }), []);
+  const isPlayer = e.hero?.isPlayer ?? false;
   const material = useMemo(() => new THREE.ShaderMaterial({
     // UniformsUtils clones values; reinsert live references after the fog merge.
-    uniforms: { ...THREE.UniformsUtils.merge([THREE.UniformsLib.fog]), tint: { value: color }, time },
+    uniforms: { ...THREE.UniformsUtils.merge([THREE.UniformsLib.fog]), tint: { value: color }, time, strength: { value: isPlayer ? 1 : 0.54 } },
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
@@ -30,6 +31,7 @@ export function HeroSelectionRing({ e, color }: { e: Entity; color: THREE.Color 
       varying vec2 runeUv;
       uniform vec3 tint;
       uniform float time;
+      uniform float strength;
       #include <fog_pars_fragment>
       float stroke(float d, float width) {
         return 1.0 - smoothstep(width, width + max(fwidth(d), 0.002), abs(d));
@@ -48,7 +50,7 @@ export function HeroSelectionRing({ e, color }: { e: Entity; color: THREE.Color 
         float runes = max(diamond, stem);
         float halo = exp(-abs(radius - 0.85) * 65.0) * 0.16;
         float alpha = max(max(outer, inner) * 0.78, max(segments, runes) * 0.9) + halo;
-        alpha *= 0.88 + sin(time * 1.8) * 0.12;
+        alpha *= strength * (0.88 + sin(time * 1.8) * 0.12);
         if (alpha < 0.015) discard;
         gl_FragColor = vec4(tint, alpha);
         #include <tonemapping_fragment>
@@ -56,7 +58,7 @@ export function HeroSelectionRing({ e, color }: { e: Entity; color: THREE.Color 
         #include <fog_fragment>
       }
     `,
-  }), [color, time]);
+  }), [color, time, isPlayer]);
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => { reducedMotion.current = media.matches; };
@@ -73,7 +75,7 @@ export function HeroSelectionRing({ e, color }: { e: Entity; color: THREE.Color 
     }
     if (!reducedMotion.current) time.value += Math.min(delta, 0.05);
   });
-  return <mesh ref={mesh} name="player-runic-ring" rotation-x={-Math.PI / 2} position-y={0.055} renderOrder={1} material={material}>
-    <planeGeometry args={[3.2, 3.2]} />
+  return <mesh ref={mesh} name="hero-team-rune" rotation-x={-Math.PI / 2} position-y={0.055} renderOrder={1} material={material}>
+    <planeGeometry args={isPlayer ? [3.2, 3.2] : [2.65, 2.65]} />
   </mesh>;
 }

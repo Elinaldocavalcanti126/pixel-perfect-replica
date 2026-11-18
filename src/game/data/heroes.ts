@@ -128,6 +128,42 @@ export const HEROES: HeroDef[] = [
       { key: "R", name: "Alvorecer", desc: "Cura todos os aliados em uma grande área ao redor.", kind: "aoeHeal", cd: [90, 80, 70], mana: 120, range: 0, radius: 11, base: 180, perLevel: 100, ratio: 0.7, targeted: false },
     ],
   },
+  {
+    id: "veyra",
+    name: "Veyra",
+    title: "a Dança do Eclipse",
+    role: "Assassina · Duelista",
+    passive: { name: "Lâmina Crescente", desc: "A cada quarto ataque básico, causa dano físico dobrado." },
+    color: 0x512d68,
+    accent: 0xf078cf,
+    base: { maxHp: 585, maxMana: 320, ad: 66, armor: 24, mr: 28, speed: 5.9, range: 2, atkSpeed: 0.92, hpRegen: 3, manaRegen: 2.8 },
+    perLevel: { maxHp: 88, maxMana: 24, ad: 4.8, armor: 3, mr: 1 },
+    ranged: false,
+    abilities: [
+      { key: "Q", name: "Corte Sombrio", desc: "Avança em um corte rápido e atordoa o alvo no fim.", kind: "dash", cd: [8, 7.5, 7, 6.5, 6], mana: 38, range: 8, radius: 2.1, base: 75, perLevel: 34, ratio: 0.72, targeted: true },
+      { key: "W", name: "Laço Umbral", desc: "Arma uma marca no chão que prende o primeiro inimigo.", kind: "trap", cd: [15, 14, 13, 12, 11], mana: 48, range: 8, radius: 1.7, base: 66, perLevel: 28, ratio: 0.5, targeted: true },
+      { key: "E", name: "Passo da Penumbra", desc: "Desaparece em um lampejo e reaparece perto do alvo.", kind: "blink", cd: [17, 15, 13, 11, 9], mana: 56, range: 7, radius: 0, base: 0, perLevel: 0, ratio: 0, targeted: true },
+      { key: "R", name: "Eclipse Carmesim", desc: "Salta sobre a área marcada e golpeia todos os inimigos próximos.", kind: "leap", cd: [75, 65, 55], mana: 110, range: 11, radius: 4.5, base: 205, perLevel: 105, ratio: 0.95, targeted: true },
+    ],
+  },
+  {
+    id: "maelis",
+    name: "Maelis",
+    title: "a Voz da Geada",
+    role: "Maga · Controle",
+    passive: { name: "Ressonância Glacial", desc: "Acertar uma habilidade reduz as outras recargas em 0,6s." },
+    color: 0x294b70,
+    accent: 0x79d9f2,
+    base: { maxHp: 535, maxMana: 440, ad: 46, armor: 21, mr: 34, speed: 5.25, range: 7.2, atkSpeed: 0.66, hpRegen: 2.6, manaRegen: 4.4 },
+    perLevel: { maxHp: 82, maxMana: 38, ad: 2.3, armor: 2.8, mr: 1.5 },
+    ranged: true,
+    abilities: [
+      { key: "Q", name: "Estilhaço Boreal", desc: "Lança uma ponta de gelo que fere o primeiro inimigo atingido.", kind: "skillshot", cd: [6, 5.5, 5, 4.5, 4], mana: 48, range: 14, radius: 1, base: 78, perLevel: 44, ratio: 0.78, targeted: true },
+      { key: "W", name: "Círculo de Inverno", desc: "Cria uma zona congelante que causa dano e reduz a velocidade.", kind: "slowZone", cd: [14, 13, 12, 11, 10], mana: 72, range: 11, radius: 4.3, base: 28, perLevel: 13, ratio: 0.22, targeted: true },
+      { key: "E", name: "Passagem de Cristal", desc: "Teleporta-se por uma curta distância, deixando um rastro frio.", kind: "blink", cd: [18, 16, 14, 12, 10], mana: 62, range: 7.5, radius: 0, base: 0, perLevel: 0, ratio: 0, targeted: true },
+      { key: "R", name: "Aurora Estilhaçada", desc: "Uma explosão de gelo atinge todos os inimigos na área marcada.", kind: "meteor", cd: [72, 62, 52], mana: 125, range: 14, radius: 5.5, base: 225, perLevel: 125, ratio: 0.95, targeted: true },
+    ],
+  },
 ];
 
 export const heroById = (id: string): HeroDef => HEROES.find((h) => h.id === id) ?? HEROES[0]!;

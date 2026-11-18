@@ -1,6 +1,6 @@
 import type { Vec } from "../types";
 
-/** Mapa em "8": duas lanes (superior e inferior) + selva em X ao centro. */
+/** Mapa 5v5 de três rotas com selva central e rotas de flanco. */
 export const MAP_W = 132;
 export const MAP_H = 84;
 export const MIN_X = -MAP_W / 2;
@@ -18,10 +18,12 @@ interface Corridor {
 const v = (x: number, z: number): Vec => ({ x, z });
 
 export const TOP_LANE: Vec[] = [v(-50, -5), v(-43, -25), v(-22, -31), v(22, -31), v(43, -25), v(50, -5)];
+export const MID_LANE: Vec[] = [v(-50, 0), v(-40, 0), v(-22, 0), v(22, 0), v(40, 0), v(50, 0)];
 export const BOT_LANE: Vec[] = TOP_LANE.map((p) => v(p.x, -p.z));
 
 export const CORRIDORS: Corridor[] = [
   { pts: TOP_LANE, half: 4.5, lane: true },
+  { pts: MID_LANE, half: 4.5, lane: true },
   { pts: BOT_LANE, half: 4.5, lane: true },
   { pts: [v(-32, -28), v(-14, -10), v(0, 0), v(14, 10), v(32, 28)], half: 3, lane: false },
   { pts: [v(-32, 28), v(-14, 10), v(0, 0), v(14, -10), v(32, -28)], half: 3, lane: false },
@@ -47,15 +49,17 @@ export const CAMPS = [
   { pos: v(14, -10), big: false },
 ];
 
-/** Torres: para cada time, [top externa, top interna, bot externa, bot interna, base], altar à parte. */
+/** Torres externas/internas nas três rotas, uma torre de base e o altar. */
 export function towerLayout(team: 0 | 1) {
   const s = team === 0 ? -1 : 1;
   return {
     towers: [
       { pos: v(22 * s, -31), lane: 0, tier: 0 },
       { pos: v(42 * s, -24), lane: 0, tier: 1 },
-      { pos: v(22 * s, 31), lane: 1, tier: 0 },
-      { pos: v(42 * s, 24), lane: 1, tier: 1 },
+      { pos: v(22 * s, 0), lane: 1, tier: 0 },
+      { pos: v(42 * s, 0), lane: 1, tier: 1 },
+      { pos: v(22 * s, 31), lane: 2, tier: 0 },
+      { pos: v(42 * s, 24), lane: 2, tier: 1 },
       { pos: v(46 * s, 0), lane: -1, tier: 2 },
     ],
     altar: v(54 * s, 0),
@@ -118,8 +122,9 @@ export function isWalkable(x: number, z: number) {
 export const cellCenter = (c: number, r: number): Vec => v(MIN_X + (c + 0.5) * CELL, MIN_Z + (r + 0.5) * CELL);
 
 /** Caminho de waypoints dos minions por lane e time. */
-export function laneWaypoints(team: 0 | 1, lane: 0 | 1): Vec[] {
-  const pts = (lane === 0 ? TOP_LANE : BOT_LANE).map((p) => ({ ...p }));
+export function laneWaypoints(team: 0 | 1, lane: 0 | 1 | 2): Vec[] {
+  const route = lane === 0 ? TOP_LANE : lane === 1 ? MID_LANE : BOT_LANE;
+  const pts = route.map((p) => ({ ...p }));
   const full = [v(-54, 0), ...pts, v(54, 0)];
   return team === 0 ? full : full.reverse();
 }

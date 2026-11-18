@@ -47,7 +47,7 @@ export interface HeroComp {
   cs: number;
   respawnAt: number;
   isPlayer: boolean;
-  lane: 0 | 1;
+  lane: 0 | 1 | 2;
   bot: BotState | null;
   attackCount: number;
   damagers: Map<number, number>; // heroId -> tempo
@@ -76,8 +76,8 @@ export interface Entity {
   moving: boolean;
   repathAt: number;
   hero: HeroComp | null;
-  minion: { lane: 0 | 1; wp: number; ranged: boolean } | null;
-  tower: { guard: number | null } | null;
+  minion: { lane: 0 | 1 | 2; wp: number; ranged: boolean } | null;
+  tower: { protectedBy: number[]; unlockedBy: number[] } | null;
   monster: { camp: number; home: Vec; big: boolean } | null;
 }
 

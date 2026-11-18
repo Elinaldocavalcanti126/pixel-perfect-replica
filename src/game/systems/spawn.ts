@@ -9,31 +9,38 @@ const st = (o: Partial<Stats>): Stats => ({
 export function buildStructures(w: World) {
   for (const team of [0, 1] as const) {
     const L = towerLayout(team);
-    const ids: number[] = [];
+    const ids = new Map<string, number>();
     for (const tw of L.towers) {
       const e = w.add(w.makeBase("tower", team, tw.pos, st({ maxHp: tw.tier === 2 ? 3200 : 2600, ad: 150, armor: 40, mr: 40, range: 9, atkSpeed: 0.85 }), 1.4));
-      e.tower = { guard: null };
-      ids.push(e.id);
+      e.tower = { protectedBy: [], unlockedBy: [] };
+      ids.set(`${tw.lane}:${tw.tier}`, e.id);
     }
-    // ordem: externa protege interna, ambas internas protegem a torre da base
-    w.byId.get(ids[1]!)!.tower!.guard = ids[0]!;
-    w.byId.get(ids[3]!)!.tower!.guard = ids[2]!;
-    const baseTower = w.byId.get(ids[4]!)!;
-    baseTower.tower!.guard = ids[1]!; // simplificação: interna top protege a base; bot tratado abaixo
-    (baseTower as unknown as { guard2: number }).guard2 = ids[3]!;
+    const innerTowers: number[] = [];
+    for (const lane of [0, 1, 2] as const) {
+      const outer = ids.get(`${lane}:0`);
+      const inner = ids.get(`${lane}:1`);
+      if (outer !== undefined && inner !== undefined) {
+        w.byId.get(inner)!.tower!.protectedBy = [outer];
+        innerTowers.push(inner);
+      }
+    }
+    const baseTowerId = ids.get("-1:2")!;
+    const baseTower = w.byId.get(baseTowerId)!;
+    baseTower.tower!.unlockedBy = innerTowers;
     const altar = w.add(w.makeBase("altar", team, L.altar, st({ maxHp: 5000, armor: 30, mr: 30, range: 0, ad: 0 }), 2.4));
-    altar.tower = { guard: ids[4]! };
+    altar.tower = { protectedBy: [baseTowerId], unlockedBy: [] };
   }
 }
 
 export function spawnWave(w: World) {
   for (const team of [0, 1] as const)
-    for (const lane of [0, 1] as const) {
+    for (const lane of [0, 1, 2] as const) {
       const wps = laneWaypoints(team, lane);
       for (let i = 0; i < 4; i++) {
         const ranged = i === 3;
         const start = wps[0]!;
-        const e = w.add(w.makeBase("minion", team, { x: start.x + (team === 0 ? 2 : -2) - i * (team === 0 ? 1.2 : -1.2), z: start.z + (lane === 0 ? -2 : 2) }, st(ranged
+        const laneZ = lane === 0 ? -2 : lane === 2 ? 2 : 0;
+        const e = w.add(w.makeBase("minion", team, { x: start.x + (team === 0 ? 2 : -2) - i * (team === 0 ? 1.2 : -1.2), z: start.z + laneZ }, st(ranged
           ? { maxHp: 300 + w.time * 0.6, ad: 22 + w.time * 0.02, speed: 4.4, range: 5.5, atkSpeed: 0.7 }
           : { maxHp: 460 + w.time * 0.8, ad: 14 + w.time * 0.02, speed: 4.4, range: 1.3, atkSpeed: 0.9, armor: 10 }), 0.5));
         e.minion = { lane, wp: 1, ranged };

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" fill="none">
+  <defs>
+    <radialGradient id="bg" cx="0" cy="0" r="1" gradientTransform="matrix(0 320 -290 0 160 0)" gradientUnits="userSpaceOnUse"><stop stop-color="#784b87"/><stop offset=".58" stop-color="#282038"/><stop offset="1" stop-color="#11151f"/></radialGradient>
+    <linearGradient id="cloak" x1="80" x2="244" y1="145" y2="316" gradientUnits="userSpaceOnUse"><stop stop-color="#70436f"/><stop offset="1" stop-color="#181827"/></linearGradient>
+    <linearGradient id="hair" x1="118" x2="202" y1="42" y2="188" gradientUnits="userSpaceOnUse"><stop stop-color="#e7b3d0"/><stop offset="1" stop-color="#6f397f"/></linearGradient>
+  </defs>
+  <path fill="url(#bg)" d="M0 0h320v320H0z"/><circle cx="160" cy="150" r="112" stroke="#ee91dc" stroke-opacity=".3"/><circle cx="160" cy="150" r="91" stroke="#ee91dc" stroke-opacity=".14"/>
+  <path fill="url(#cloak)" stroke="#d783cb" stroke-opacity=".45" stroke-width="3" d="m67 320 16-91 40-27h74l42 27 19 91H67Z"/>
+  <path fill="#c1a3d3" d="m127 205 33 20 34-20 15 75h-97l15-75Z"/><path stroke="#f1c4ed" stroke-width="5" d="m160 231 13 19-13 31-13-31 13-19Z"/>
+  <path fill="url(#hair)" d="M101 127c-4-59 14-98 56-108 37-9 73 16 78 56l-10 96-34 39-77-8-26-75 13 0Z"/>
+  <path fill="#e5b4a0" d="M113 112c0-37 19-61 47-61 30 0 49 24 49 61v42c0 34-21 57-49 57-28 0-47-23-47-57v-42Z"/>
+  <path fill="#3c2849" d="m104 124 5-48 26-35 41-14 47 23 15 46-28 24-10-33-20-14-26 24-28 7-10 48-12-28Z"/>
+  <path fill="#5f4174" d="m110 150-28 45-16-16 30-61 14 32Zm105-17 39 33-12 22-31-27 4-28Z"/>
+  <path stroke="#f1d1ed" stroke-width="3" d="m124 136 25 3m47-3-25 3"/><path fill="#211b31" d="m120 132 31 5-11 10-20-4v-11Zm78 0-31 5 11 10 20-4v-11Z"/>
+  <path fill="#c87aa7" d="M142 179c11 8 26 8 36 0-3 16-9 23-18 23-9 0-16-7-18-23Z"/>
+  <path stroke="#f38bdd" stroke-width="7" stroke-linecap="round" d="m66 233 55-71m135 79-64-77"/><path fill="#fff0e7" d="m112 153 14 12-61 72-11-9 58-75Zm82 25 12-12 61 69-11 10-62-67Z"/>
+  <circle cx="160" cy="146" r="5" fill="#fff0bc"/><path stroke="#f7b7e8" stroke-opacity=".75" stroke-width="2" d="M160 17v21M44 150h20m192 0h20M74 62l15 15m152-15-15 15"/>
+</svg>

@@ -17,8 +17,19 @@ export function TargetingRings({ w }: { w: World }) {
 
   useEffect(() => {
     const css = getComputedStyle(document.documentElement);
-    colors.range.set(css.getPropertyValue("--ring-range").trim() || "#e8c96a");
-    colors.target.set(css.getPropertyValue("--ring-target").trim() || "#d94c2a");
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 1;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) return;
+    const read = (token: string, target: THREE.Color, fallback: string) => {
+      context.clearRect(0, 0, 1, 1);
+      context.fillStyle = css.getPropertyValue(token).trim() || fallback;
+      context.fillRect(0, 0, 1, 1);
+      const pixel = context.getImageData(0, 0, 1, 1).data;
+      target.setRGB((pixel[0] ?? 255) / 255, (pixel[1] ?? 255) / 255, (pixel[2] ?? 255) / 255, THREE.SRGBColorSpace);
+    };
+    read("--ring-range", colors.range, "#e8c96a");
+    read("--ring-target", colors.target, "#d94c2a");
   }, [colors]);
 
   const mats = useMemo(() => {

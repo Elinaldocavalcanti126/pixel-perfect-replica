@@ -3,7 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import type { World } from "@/game/ecs/world";
 
-const TOKENS = ["--damage-physical", "--damage-magical", "--damage-critical", "--damage-outline", "--vfx-core", "--hero-rim-warrior", "--hero-rim-mage", "--hero-rim-archer", "--hero-rim-support"];
+const TOKENS = ["--damage-physical", "--damage-magical", "--damage-critical", "--damage-outline", "--vfx-core", "--hero-rim-warrior", "--hero-rim-mage", "--hero-rim-archer", "--hero-rim-support", "--hero-rim-veyra", "--hero-rim-maelis"];
 
 function useVfxPalette() {
   const palette = useMemo(() => TOKENS.map(() => new THREE.Color()), []);
@@ -115,7 +115,7 @@ export function CombatVfx({ w }: { w: World }) {
     pool.current.slice(num).forEach(({ sprite }) => { sprite.visible = false; });
     for (const e of w.entities) {
       if (!e.hero || !e.alive || !e.visible || !nearby(e.pos.x, e.pos.z)) continue;
-      const id = ["warrior", "mage", "archer", "support"].indexOf(e.hero.defId);
+      const id = ["warrior", "mage", "archer", "support", "veyra", "maelis"].indexOf(e.hero.defId);
       const tint = palette[5 + Math.max(0, id)];
       if (!tint) continue;
       const age = w.time - e.lastAttackTime;
@@ -133,7 +133,7 @@ export function CombatVfx({ w }: { w: World }) {
           reach * grow, reach * grow, reach * grow, tint, (1 - t01) * 1.7,
         );
       }
-      if (sp < 768 && (e.hero.defId === "mage" || e.hero.defId === "support") && e.hero.cds.some((cd) => cd > 0)) {
+      if (sp < 768 && (e.hero.defId === "mage" || e.hero.defId === "support" || e.hero.defId === "maelis") && e.hero.cds.some((cd) => cd > 0)) {
         quaternion.identity();
         const pulse = 0.1 + Math.sin(w.time * 5 + e.id) * 0.025;
         place(sparkMesh, sp++, e.pos.x + Math.cos(e.rot) * 0.45, 1.65, e.pos.z - Math.sin(e.rot) * 0.45, pulse, pulse, pulse, tint, 3);
@@ -144,7 +144,7 @@ export function CombatVfx({ w }: { w: World }) {
       const src = w.byId.get(p.sourceId);
       // Never reveal shots from hidden opponents.
       if (!src?.visible) continue;
-      const tint = p.magic ? palette[1] : src.hero?.defId === "archer" ? palette[7] : palette[2];
+      const tint = p.magic ? palette[1] : src.hero?.defId === "archer" ? palette[7] : src.hero?.defId === "veyra" ? palette[9] : palette[2];
       if (!tint) continue;
       const length = p.isAbility ? 2.3 : 1.25;
       direction.set(p.dir.x, 0, p.dir.z).normalize();

@@ -52,7 +52,7 @@ const enemiesNear = (w: World, src: Entity, pos: Vec, r: number) =>
   w.entities.filter((e) => e.alive && e.team !== src.team && w.isTargetable(e) && e.kind !== "altar" && w.dist(e.pos, pos) <= r + e.radius);
 
 function onAbilityHit(w: World, src: Entity) {
-  if (src.hero?.defId === "mage") src.hero.cds = src.hero.cds.map((c) => Math.max(0, c - 0.6));
+  if (src.hero?.defId === "mage" || src.hero?.defId === "maelis") src.hero.cds = src.hero.cds.map((c) => Math.max(0, c - 0.6));
 }
 
 export function canCast(w: World, e: Entity, idx: number) {

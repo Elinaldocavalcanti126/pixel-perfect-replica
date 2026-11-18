@@ -63,7 +63,7 @@ export class World {
     };
   }
 
-  spawnHero(defId: string, team: 0 | 1, isPlayer: boolean, lane: 0 | 1): Entity {
+  spawnHero(defId: string, team: 0 | 1, isPlayer: boolean, lane: 0 | 1 | 2): Entity {
     const def = heroById(defId);
     const f = FOUNTAIN[team];
     const base = this.makeBase("hero", team, { x: f.x + (Math.random() - 0.5) * 3, z: f.z + (Math.random() - 0.5) * 6 }, { ...def.base, ap: 0 }, 0.7);
@@ -117,10 +117,8 @@ export class World {
 
   isTargetable(e: Entity) {
     if (!e.alive) return false;
-    if (e.tower?.guard != null) {
-      const g = this.byId.get(e.tower.guard);
-      if (g && g.alive) return false;
-    }
+    if (e.tower?.protectedBy.some((id) => this.byId.get(id)?.alive)) return false;
+    if (e.tower?.unlockedBy.length && !e.tower.unlockedBy.some((id) => !this.byId.get(id)?.alive)) return false;
     return true;
   }
 

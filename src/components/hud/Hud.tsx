@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { X } from "lucide-react";
 import type { World } from "@/game/ecs/world";
 import type { CamState } from "@/components/game/GameScene";
 import { useHud } from "@/game/store";
@@ -14,13 +15,33 @@ import { Button } from "@/components/ui/button";
 
 const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
 
-export function Hud({ w, cam, input, onExit }: { w: World; cam: CamState; input: TouchInput; onExit: () => void }) {
+export function Hud({ w, cam, input, guided, onExit, onRestart }: { w: World; cam: CamState; input: TouchInput; guided: boolean; onExit: () => void; onRestart: () => void }) {
   const s = useHud();
   const [shop, setShop] = useState(false);
   const [board, setBoard] = useState(false);
   const [paused, setPaused] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [coach, setCoach] = useState(false);
+  const [tutorialStep, setTutorialStep] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!guided || !w.player?.hero) { setTutorialStep(null); return; }
+    const start = { ...w.player.pos };
+    const startAttack = w.player.lastAttackTime;
+    const startCooldowns = [...w.player.hero.cds];
+    setTutorialStep(0);
+    const timer = window.setInterval(() => {
+      const player = w.player;
+      if (!player?.hero) return;
+      setTutorialStep((step) => {
+        if (step === 0 && Math.hypot(player.pos.x - start.x, player.pos.z - start.z) > 1.2) return 1;
+        if (step === 1 && player.lastAttackTime > startAttack) return 2;
+        if (step === 2 && player.hero!.cds.some((cooldown, index) => cooldown > (startCooldowns[index] ?? 0) + 0.1)) return 3;
+        return step;
+      });
+    }, 250);
+    return () => window.clearInterval(timer);
+  }, [guided, w]);
 
   useEffect(() => {
     const kd = (e: KeyboardEvent) => {
@@ -55,6 +76,7 @@ export function Hud({ w, cam, input, onExit }: { w: World; cam: CamState; input:
   // Painel do alvo focado (topo central), como nos MOBAs modernos.
   const tgt = me.attackTarget != null ? w.byId.get(me.attackTarget) : undefined;
   const showTgt = !!tgt && tgt.alive && tgt.visible && tgt.team !== me.team;
+  const playerRow = s.heroes.find((h) => h.id === w.playerId);
   const tgtName = tgt?.hero?.name ?? (tgt?.kind === "tower" ? "Torre" : tgt?.kind === "altar" ? "Altar" : tgt?.kind === "monster" ? (tgt.monster?.big ? "Colosso Ancestral" : "Monstro da Selva") : "Lacaio");
 
   return (
@@ -105,6 +127,7 @@ export function Hud({ w, cam, input, onExit }: { w: World; cam: CamState; input:
 
       <CombatControls w={w} s={s} input={input} onShop={() => setShop((x) => !x)} onPause={() => { input.moving = false; input.attacking = false; input.aiming = false; cmdStop(w); w.input.targeting = -1; w.paused = true; setPaused(true); }} />
       <div className="combat-minimap"><Minimap w={w} cam={cam} /></div>
+      {tutorialStep !== null && !shop && !board && !paused && s.winner === null && <TutorialCard step={tutorialStep} onClose={() => setTutorialStep(null)} />}
 
       {shop && (
         <div className="pointer-events-auto absolute left-1/2 top-1/2 w-[min(560px,calc(100vw-24px))] max-h-[85dvh] overflow-y-auto -translate-x-1/2 -translate-y-1/2 panel-frame p-5">
@@ -132,14 +155,25 @@ export function Hud({ w, cam, input, onExit }: { w: World; cam: CamState; input:
 
       {(paused || s.winner !== null) && (
         <div className="pointer-events-auto absolute inset-0 grid place-items-center bg-background/70 backdrop-blur-sm">
-          <div className={`panel-frame w-[min(384px,calc(100vw-24px))] p-8 text-center ${coach ? "invisible" : ""}`}>
+          <div className={`panel-frame w-[min(520px,calc(100vw-24px))] p-7 text-center ${coach ? "invisible" : ""}`}>
             {s.winner !== null ? (
-              <h2 className={`font-display text-4xl ${s.winner === 0 ? "text-primary" : "text-destructive"}`}>{s.winner === me.team ? "Vitória" : "Derrota"}</h2>
+              <>
+                <p className="mb-2 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Partida encerrada · {fmt(s.time)}</p>
+                <h2 className={`font-display text-4xl ${s.winner === me.team ? "text-primary" : "text-destructive"}`}>{s.winner === me.team ? "Vitória" : "Derrota"}</h2>
+                <p className="mt-2 text-xs text-muted-foreground">{s.winner === me.team ? "O altar inimigo caiu. Sua equipe dominou a fenda." : "O altar aliado foi destruído. Reúna sua equipe e tente outra vez."}</p>
+                <div className="match-result-score mt-5"><span className="text-team-blue">ORDEM AZUL <b>{s.teamKills[0]}</b></span><i>ABATES</i><span className="text-team-red"><b>{s.teamKills[1]}</b> LEGIAO RUBRA</span></div>
+                <div className="match-result-stats">
+                  <div><small>ABATES / MORTES / ASSISTÊNCIAS</small><b>{playerRow?.k ?? 0} <i>/</i> {playerRow?.d ?? 0} <i>/</i> {playerRow?.a ?? 0}</b></div>
+                  <div><small>LACAIOS ELIMINADOS</small><b>{playerRow?.cs ?? 0}</b></div>
+                  <div><small>OURO ACUMULADO</small><b>◈ {s.gold}</b></div>
+                </div>
+              </>
             ) : <h2 className="font-display text-3xl text-primary">Pausado</h2>}
             <div className="mt-6 flex flex-col gap-2">
               {s.winner === null && <Button variant="ghost" className="btn-rune" onClick={() => { w.paused = false; setPaused(false); }}>Continuar</Button>}
-              <Button variant="ghost" className="btn-rune btn-rune--ghost" onClick={() => setCoach(true)}>Dicas táticas com IA</Button>
-              <Button variant="ghost" className="btn-rune btn-rune--ghost" onClick={onExit}>Sair para o menu</Button>
+              {s.winner !== null && <Button variant="ghost" className="btn-rune" onClick={onRestart}>Jogar novamente</Button>}
+              {s.winner === null && <Button variant="ghost" className="btn-rune btn-rune--ghost" onClick={() => setCoach(true)}>Dicas táticas com IA</Button>}
+              <Button variant="ghost" className="btn-rune btn-rune--ghost" onClick={onExit}>Voltar ao lobby</Button>
             </div>
           </div>
           {coach && <TacticalCoach s={s} team={me.team} onClose={() => setCoach(false)} />}
@@ -147,6 +181,23 @@ export function Hud({ w, cam, input, onExit }: { w: World; cam: CamState; input:
       )}
     </div>
   );
+}
+
+function TutorialCard({ step, onClose }: { step: number; onClose: () => void }) {
+  const lessons = [
+    { title: "Mova-se pela rota", body: "No computador, clique com o botão direito no chão. No celular, arraste o direcional à esquerda para caminhar." },
+    { title: "Ataque um inimigo", body: "Clique com o botão direito em um alvo ou use o botão ATACAR no celular quando um inimigo estiver por perto." },
+    { title: "Use uma habilidade", body: "Pressione Q, W ou E e clique para confirmar a mira. No celular, arraste o ícone da habilidade até o alvo." },
+    { title: "Você está pronto", body: "Siga seus lacaios, proteja suas torres e volte à base para comprar itens. Destrua o altar inimigo para vencer." },
+  ];
+  const lesson = lessons[Math.min(step, lessons.length - 1)]!;
+  return <section className="tutorial-card pointer-events-auto" aria-live="polite" aria-label={`Tutorial, etapa ${Math.min(step + 1, 4)} de 4`}>
+    <div className="tutorial-card-top"><span>GUIA DE COMBATE <b>{String(Math.min(step + 1, 4)).padStart(2, "0")} / 04</b></span><button onClick={onClose} aria-label="Pular tutorial"><X size={15} /></button></div>
+    <div className="tutorial-progress">{lessons.map((_, index) => <i key={index} className={index <= step ? "is-done" : ""} />)}</div>
+    <h2>{lesson.title}</h2><p>{lesson.body}</p>
+    {step === 3 && <Button variant="ghost" className="btn-rune tutorial-finish" onClick={onClose}>Concluir guia</Button>}
+    {step < 3 && <button className="tutorial-skip" onClick={onClose}>Pular tutorial</button>}
+  </section>;
 }
 
 function Scoreboard({ s }: { s: NonNullable<ReturnType<typeof useHud>> }) {

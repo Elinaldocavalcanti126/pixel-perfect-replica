@@ -29,7 +29,7 @@ export function combatSystem(w: World, dt: number) {
         e.lastAttackTime = t;
         let dmg = e.stats.ad;
         let critical = false;
-        if (e.hero?.defId === "archer") {
+        if (e.hero?.defId === "archer" || e.hero?.defId === "veyra") {
           e.hero.attackCount++;
           if (e.hero.attackCount % 4 === 0) { dmg *= 2; critical = true; }
         }

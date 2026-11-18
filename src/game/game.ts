@@ -13,20 +13,30 @@ import { publishHud } from "./store";
 
 export const TICK = 1 / 30;
 
+function shuffled<T>(items: T[]): T[] {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j]!, result[i]!];
+  }
+  return result;
+}
+
 /** Cria uma partida 5x5: jogador + 4 bots aliados contra 5 bots. */
 export function createMatch(playerHero: string): World {
   const w = new World();
   buildStructures(w);
   const ids = HEROES.map((h) => h.id);
-  const others = ids.filter((i) => i !== playerHero);
-  const blue = [playerHero, ...others, ids[Math.floor(Math.random() * 4)]!];
-  const red = [...ids].sort(() => Math.random() - 0.5);
-  red.push(ids[Math.floor(Math.random() * 4)]!);
+  const blue = [playerHero, ...shuffled(ids.filter((id) => id !== playerHero)).slice(0, 4)];
+  while (blue.length < 5) blue.push(ids[Math.floor(Math.random() * ids.length)]!);
+  const red = shuffled(ids).slice(0, 5);
+  while (red.length < 5) red.push(ids[Math.floor(Math.random() * ids.length)]!);
+  const laneOrder = [0, 1, 2, 1, 2] as const;
   blue.forEach((id, i) => {
-    const e = w.spawnHero(id, 0, i === 0, (i % 2) as 0 | 1);
+    const e = w.spawnHero(id, 0, i === 0, laneOrder[i % laneOrder.length]!);
     if (i === 0) w.playerId = e.id;
   });
-  red.forEach((id, i) => w.spawnHero(id, 1, false, (i % 2) as 0 | 1));
+  red.forEach((id, i) => w.spawnHero(id, 1, false, laneOrder[i % laneOrder.length]!));
   return w;
 }
 
